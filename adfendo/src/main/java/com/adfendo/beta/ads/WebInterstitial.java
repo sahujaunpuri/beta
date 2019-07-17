@@ -64,7 +64,7 @@ public class WebInterstitial extends AppCompatActivity {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInterstitialModel.getWebUrl()));
                 startActivity(browserIntent);
                 AdFendoInterstitialAd.interstitialAdListener.onImpression();
-                AdFendoInterstitialAd.interstitialAdListener.onClosed();
+
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {

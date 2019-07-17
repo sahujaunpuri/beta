@@ -65,6 +65,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
     AdOnCloseListener adOnCloseListener;
 
     private long mLastClickTime = 0;
+
     public InterstitialAdDefault() {
     }
 
@@ -139,7 +140,6 @@ public class InterstitialAdDefault extends AppCompatActivity {
                     return;
                 }
                 mLastClickTime = SystemClock.elapsedRealtime();
-
 
                 saveDataToServer(true, interstitialModel.getAdId());
                 String[] appPackageName = interstitialModel.getAppUrl().split("=");
@@ -251,7 +251,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
                 adUnitId,
                 AppID.getAppId(),
                 key.getApiKey(),
-                interstitialModel.getAdEventId(),Utils.getAgentInfo(),AdFendo.getAndroidId());
+                interstitialModel.getAdEventId(), Utils.getAgentInfo(), AdFendo.getAndroidId());
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -261,17 +261,16 @@ public class InterstitialAdDefault extends AppCompatActivity {
                         setIsLoaded(false);
                         AdFendoInterstitialAd.interstitialAdListener.isLoaded(isLoaded);
                     }
-
-                    finish();
                     AdFendoInterstitialAd.interstitialAdListener.onClosed();
                 }
+                finish();
             }
 
             @Override
             public void onFailure(Call<AdResponse> call, Throwable t) {
                 Log.d(AdFendo.class.getSimpleName(), "" + t.getMessage());
-                finish();
                 AdFendoInterstitialAd.interstitialAdListener.onClosed();
+                finish();
             }
         });
     }

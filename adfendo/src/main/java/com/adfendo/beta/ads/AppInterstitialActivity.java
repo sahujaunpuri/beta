@@ -97,7 +97,6 @@ public class AppInterstitialActivity extends AppCompatActivity {
                 } catch (android.content.ActivityNotFoundException anfe) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(customInterstitialAd.getAppUrl())));
                 }
-                AdFendoInterstitialAd.interstitialAdListener.onClosed();
                 finish();
             }
         });

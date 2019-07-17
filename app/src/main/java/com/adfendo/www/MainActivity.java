@@ -1,18 +1,16 @@
 package com.adfendo.www;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.adfendo.beta.ads.AdFendoInterstitialAd;
 import com.adfendo.beta.ads.BannerAd;
 import com.adfendo.beta.ads.VideoAd;
-import com.adfendo.beta.interfaces.BannerAdListener;
 import com.adfendo.beta.interfaces.InterstitialAdListener;
-import com.adfendo.beta.interfaces.VideoAdListener;
 import com.adfendo.beta.utilities.AdFendo;
 
 public class MainActivity extends AppCompatActivity {
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         adFendoInterstitialAd.setInterstitialAdListener(new InterstitialAdListener() {
             @Override
             public void onClosed() {
-                adFendoInterstitialAd.requestAd();
+//                adFendoInterstitialAd.requestAd();
 //               Toast.makeText(MainActivity.this, "onClosed called ", Toast.LENGTH_SHORT).show();
             }
 
@@ -89,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void isLoaded(boolean isLoaded) {
+
 //                Toast.makeText(MainActivity.this, "Interstitial isLoaded "+isLoaded, Toast.LENGTH_SHORT).show();
             }
 
@@ -101,12 +100,12 @@ public class MainActivity extends AppCompatActivity {
         interstetialButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (adFendoInterstitialAd.isLoaded()) {
                     adFendoInterstitialAd.showAd();
                 } else {
                     Toast.makeText(MainActivity.this, "something went error", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
 

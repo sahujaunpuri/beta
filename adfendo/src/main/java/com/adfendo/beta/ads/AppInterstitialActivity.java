@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -56,6 +57,8 @@ public class AppInterstitialActivity extends AppCompatActivity {
     private CustomInterstitialModel customInterstitialAd;
     private ImageView fullImage;
     private long mLastClickTime = 0;
+    long clickedTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,9 +88,15 @@ public class AppInterstitialActivity extends AppCompatActivity {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                clickedTime = SystemClock.elapsedRealtime();
+                long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime) / 1000;
+                Toast.makeText(AppInterstitialActivity.this, "Difference :" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
+
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
                 }
+
                 mLastClickTime = SystemClock.elapsedRealtime();
                 saveDataToServer(true, customInterstitialAd.getAdId());
                 String[] appPackageName = customInterstitialAd.getAppUrl().split("=");
@@ -113,7 +122,6 @@ public class AppInterstitialActivity extends AppCompatActivity {
     }
 
 
-
     private void display() {
         Glide.with(this).load(customInterstitialAd.getIntAdImageLink()).into(fullImage);
         description.setText(customInterstitialAd.getIntAdDescription());
@@ -127,7 +135,8 @@ public class AppInterstitialActivity extends AppCompatActivity {
     private void saveDataToServer(final boolean isClicked, final int adID) {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Key key = new Key();
-        Call<AdResponse> call = apiInterface.clickAd(customInterstitialAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), customInterstitialAd.getAdEventId(),Utils.getAgentInfo(), AdFendo.getAndroidId());
+        Call<AdResponse> call = apiInterface.clickAd(customInterstitialAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), customInterstitialAd.getAdEventId(), Utils.getAgentInfo(), AdFendo.getAndroidId(),
+                clickedTime);
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

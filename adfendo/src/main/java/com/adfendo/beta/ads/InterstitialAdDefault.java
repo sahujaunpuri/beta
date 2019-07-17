@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -91,7 +92,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
     AdResponse adResponse;
 
     String adUnitId = "";
-
+   long  clickedTime;
     public void setListener(InterstitialAdListener interstitialAdListener) {
         InterstitialAdDefault.interstitialAdListener = interstitialAdListener;
     }
@@ -135,6 +136,10 @@ public class InterstitialAdDefault extends AppCompatActivity {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                clickedTime = SystemClock.elapsedRealtime();
+                long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime)/1000;
+                Toast.makeText(InterstitialAdDefault.this, "Difference :"+differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
 
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
@@ -251,7 +256,8 @@ public class InterstitialAdDefault extends AppCompatActivity {
                 adUnitId,
                 AppID.getAppId(),
                 key.getApiKey(),
-                interstitialModel.getAdEventId(), Utils.getAgentInfo(), AdFendo.getAndroidId());
+                interstitialModel.getAdEventId(), Utils.getAgentInfo(), AdFendo.getAndroidId(),clickedTime
+                );
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

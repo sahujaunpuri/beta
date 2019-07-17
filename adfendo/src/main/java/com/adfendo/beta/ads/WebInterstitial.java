@@ -5,11 +5,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,6 +40,7 @@ public class WebInterstitial extends AppCompatActivity {
     private ImageView imageViewWeb;
     private Button cancelButton;
     private boolean isLoaded;
+    private long clickedTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,10 @@ public class WebInterstitial extends AppCompatActivity {
         imageViewWeb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clickedTime = SystemClock.elapsedRealtime();
+                long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime)/1000;
+                Toast.makeText(WebInterstitial.this, "Difference :"+differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
+
                 saveDataToServer(true, webInterstitialModel.getAdId());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInterstitialModel.getWebUrl()));
                 startActivity(browserIntent);
@@ -83,7 +90,8 @@ public class WebInterstitial extends AppCompatActivity {
                 adUnitId,
                 AppID.getAppId(),
                 key.getApiKey(),
-                webInterstitialModel.getAdEventId(), Utils.getAgentInfo(),AdFendo.getAndroidId());
+                webInterstitialModel.getAdEventId(), Utils.getAgentInfo(),AdFendo.getAndroidId(),clickedTime
+                );
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

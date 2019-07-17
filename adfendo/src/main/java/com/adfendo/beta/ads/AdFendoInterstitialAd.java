@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
@@ -39,16 +41,16 @@ public class AdFendoInterstitialAd {
     private static CustomInterstitialModel customInterstitialModel;
     private static WebInterstitialModel webInterstitialModel;
     static InterstitialAdListener interstitialAdListener;
-    private String adType = "";
+
     private String location= ",";
     private int eventId;
     private int adId;
     private Key key;
     private static final String TAG = "AdFendoInterstitialAd";
 
-    private String androidID;
-    private String agentInfo;
+    public static long impressionMillisecond=0;
 
+    private long clickedMillisecond;
     public AdFendoInterstitialAd(Context context, String adUnitID) {
         AdFendoInterstitialAd.ctx = context;
         this.unitId = adUnitID;
@@ -57,8 +59,7 @@ public class AdFendoInterstitialAd {
     public void setInterstitialAdListener(InterstitialAdListener interstitialAdListener) {
         AdFendoInterstitialAd.interstitialAdListener = interstitialAdListener;
     }
-    public void setInterstitialAdListerner() {
-    }
+
     public void requestAd() {
         if (!unitId.equals("")) {
             if (!AppID.getAppId().equals("")) {
@@ -170,7 +171,6 @@ public class AdFendoInterstitialAd {
         String agent = Utils.getAgentInfo();
         String deviceId="";
         try {
-
             deviceId = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
         }catch (Exception e){
             Log.d(TAG, "requestForAd: "+e.getMessage());
@@ -181,8 +181,8 @@ public class AdFendoInterstitialAd {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 adResponse = response.body();
-                switch (adResponse.getCode()) {
 
+                switch (adResponse.getCode()) {
                     case ErrorCode.AD_NOT_AVAILABLE:
                         interstitialAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
                         setIsLoaded(false);
@@ -207,7 +207,6 @@ public class AdFendoInterstitialAd {
                         interstitialAdListener.onFailedToLoad(ErrorCode.APP_NOT_ACTIVE);
                         break;
                     case ErrorCode.VALID_RESPONSE:
-
                         switch (adResponse.getAdType()) {
                             case Constants.DEFAULT:
                                 setIsLoaded(true);
@@ -240,8 +239,6 @@ public class AdFendoInterstitialAd {
             }
         });
     }
-
-
     @SuppressLint("StaticFieldLeak")
     private class ImpressionInBaground extends AsyncTask<Void, Void, Void> {
         @Override
@@ -259,6 +256,7 @@ public class AdFendoInterstitialAd {
             call.enqueue(new Callback<AdResponse>() {
                 @Override
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
+                    impressionMillisecond = SystemClock.elapsedRealtime();
                     interstitialAdListener.onImpression();
                 }
 

@@ -251,7 +251,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
                 adUnitId,
                 AppID.getAppId(),
                 key.getApiKey(),
-                interstitialModel.getAdEventId());
+                interstitialModel.getAdEventId(),Utils.getAgentInfo(),AdFendo.getAndroidId());
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

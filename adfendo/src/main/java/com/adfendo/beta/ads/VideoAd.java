@@ -278,11 +278,9 @@ public class VideoAd extends AppCompatActivity {
                 if (AppID.getAppId() != null) {
                     Key key = new Key();
                     apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    String agent = Utils.getAgentInfo();
                     Call<AdResponse> call = apiInterface.requestVideoAd(addUnitId,
                             AppID.getAppId(),
-                            Utils.location, key.getApiKey(),
-                            agent);
+                            Utils.location, key.getApiKey(),Utils.getAgentInfo(),AdFendo.getAndroidId());
                     call.enqueue(new Callback<AdResponse>() {
                         @Override
                         public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -351,7 +349,7 @@ public class VideoAd extends AppCompatActivity {
                 apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                 Key key = new Key();
                 String appId = AppID.getAppId();
-                Call<AdResponse> call = apiInterface.adImpression(video.getAdId(), addUnitId, appId, key.getApiKey(), video.getAdEventId());
+                Call<AdResponse> call = apiInterface.adImpression(video.getAdId(), addUnitId, appId, key.getApiKey(), video.getAdEventId(),Utils.getAgentInfo(),AdFendo.getAndroidId());
                 call.enqueue(new Callback<AdResponse>() {
                     @Override
                     public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -381,7 +379,7 @@ public class VideoAd extends AppCompatActivity {
     private void saveDataToServer(final boolean isClicked, String adID) {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Key key = new Key();
-        Call<AdResponse> call = apiInterface.clickAd(video.getAdId(), addUnitId, AppID.getAppId(), key.getApiKey(), video.getAdEventId());
+        Call<AdResponse> call = apiInterface.clickAd(video.getAdId(), addUnitId, AppID.getAppId(), key.getApiKey(), video.getAdEventId(),Utils.getAgentInfo(),AdFendo.getAndroidId());
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

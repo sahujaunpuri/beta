@@ -24,6 +24,7 @@ import com.adfendo.beta.callback.ApiInterface;
 import com.adfendo.beta.interfaces.BannerAdListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.Banner;
+import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.ErrorCode;
 import com.adfendo.beta.utilities.Key;
@@ -44,17 +45,22 @@ public class BannerAd extends LinearLayout {
     public static BannerAdListener bannerAdListener;
     @SuppressLint("StaticFieldLeak")
     private static Context context;
+
     public boolean isLoaded() {
         return isLoaded;
     }
+
     public void setIsLoaded(boolean ready) {
         isLoaded = ready;
     }
+
     ApiInterface apiInterface;
     private boolean isClicked;
+
     public void setOnBannerAdListener(BannerAdListener bannerAdListener) {
         BannerAd.bannerAdListener = bannerAdListener;
     }
+
     public static int mHeight = 0;
     public static int mWidth = 0;
     private View view;
@@ -85,9 +91,10 @@ public class BannerAd extends LinearLayout {
             utils.getLocation();
         }
     }
+
     public BannerAd(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if (!loadAd){
+        if (!loadAd) {
             loadAd = true;
         }
         init(context, attrs, 0);
@@ -113,7 +120,7 @@ public class BannerAd extends LinearLayout {
         mHeight = (Resources.getSystem().getDisplayMetrics().heightPixels * 15) / 100;
         mWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         if (checkConnection()) {
-            if (loadAd){
+            if (loadAd) {
                 this.new RequestBannerAdInBackground().execute(view);
                 loadAd = false;
             }
@@ -156,7 +163,7 @@ public class BannerAd extends LinearLayout {
                 apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                 Key key = new Key();
                 String appId = AppID.getAppId();
-                Call<AdResponse> call = apiInterface.adImpression(bannerAd.getAdId(), adUnitId, appId, key.getApiKey(), bannerAd.getAdEventId());
+                Call<AdResponse> call = apiInterface.adImpression(bannerAd.getAdId(), adUnitId, appId, key.getApiKey(), bannerAd.getAdEventId(),Utils.getAgentInfo(),AdFendo.getAndroidId());
                 call.enqueue(new Callback<AdResponse>() {
                     @Override
                     public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -185,7 +192,8 @@ public class BannerAd extends LinearLayout {
         protected Void doInBackground(Void... voids) {
             apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
             Key key = new Key();
-            Call<AdResponse> call = apiInterface.clickAd(bannerAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), bannerAd.getAdEventId());
+            Call<AdResponse> call = apiInterface.clickAd(bannerAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), bannerAd.getAdEventId(),
+                    Utils.getAgentInfo(),AdFendo.getAndroidId());
             call.enqueue(new Callback<AdResponse>() {
                 @Override
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -216,10 +224,9 @@ public class BannerAd extends LinearLayout {
         protected Void doInBackground(final View... views) {
             apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
             String appId = AppID.getAppId();
-           String agent =  Utils.getAgentInfo();
             Key key = new Key();
             Call<AdResponse> call = apiInterface.requestBanner(adUnitId,
-                    appId, Utils.location, key.getApiKey(),agent);
+                    appId, Utils.location, key.getApiKey(), Utils.getAgentInfo(), AdFendo.getAndroidId());
             call.enqueue(new Callback<AdResponse>() {
                 @Override
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -261,6 +268,7 @@ public class BannerAd extends LinearLayout {
                         }
                     }
                 }
+
                 @Override
                 public void onFailure(Call<AdResponse> call, Throwable t) {
                     isLoaded = false;
@@ -270,6 +278,7 @@ public class BannerAd extends LinearLayout {
             return null;
         }
     }
+
     public boolean checkConnection() {
         Runtime runtime = Runtime.getRuntime();
         try {

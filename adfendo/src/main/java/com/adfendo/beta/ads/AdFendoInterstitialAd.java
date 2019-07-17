@@ -15,6 +15,7 @@ import com.adfendo.beta.model.CustomInterstitialModel;
 import com.adfendo.beta.model.InterstitialModel;
 import com.adfendo.beta.model.IpLocatoin;
 import com.adfendo.beta.model.WebInterstitialModel;
+import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
 import com.adfendo.beta.utilities.ErrorCode;
@@ -44,6 +45,9 @@ public class AdFendoInterstitialAd {
     private int adId;
     private Key key;
     private static final String TAG = "AdFendoInterstitialAd";
+
+    private String androidID;
+    private String agentInfo;
 
     public AdFendoInterstitialAd(Context context, String adUnitID) {
         AdFendoInterstitialAd.ctx = context;
@@ -250,7 +254,7 @@ public class AdFendoInterstitialAd {
                     unitId,
                     appId,
                     key.getApiKey(),
-                    eventId
+                    eventId, Utils.getAgentInfo(), AdFendo.getAndroidId()
             );
             call.enqueue(new Callback<AdResponse>() {
                 @Override

@@ -23,6 +23,7 @@ import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
 import com.adfendo.beta.utilities.Key;
+import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
 
 import retrofit2.Call;
@@ -82,7 +83,7 @@ public class WebInterstitial extends AppCompatActivity {
                 adUnitId,
                 AppID.getAppId(),
                 key.getApiKey(),
-                webInterstitialModel.getAdEventId());
+                webInterstitialModel.getAdEventId(), Utils.getAgentInfo(),AdFendo.getAndroidId());
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

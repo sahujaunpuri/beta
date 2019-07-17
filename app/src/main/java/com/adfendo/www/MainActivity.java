@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         BannerAd bannerAd = new BannerAd(this, "pub-ad-unit-id-704441634~759229480");
-
         bannerAd.setOnBannerAdListener(new BannerAdListener() {
             @Override
             public void onClosed() {

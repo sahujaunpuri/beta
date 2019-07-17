@@ -23,6 +23,7 @@ import com.adfendo.beta.callback.ApiInterface;
 
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.CustomInterstitialModel;
+import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
 import com.adfendo.beta.utilities.Key;
@@ -127,7 +128,7 @@ public class AppInterstitialActivity extends AppCompatActivity {
     private void saveDataToServer(final boolean isClicked, final int adID) {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Key key = new Key();
-        Call<AdResponse> call = apiInterface.clickAd(customInterstitialAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), customInterstitialAd.getAdEventId());
+        Call<AdResponse> call = apiInterface.clickAd(customInterstitialAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), customInterstitialAd.getAdEventId(),Utils.getAgentInfo(), AdFendo.getAndroidId());
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

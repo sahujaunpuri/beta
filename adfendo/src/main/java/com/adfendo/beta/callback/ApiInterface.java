@@ -27,7 +27,8 @@ public interface ApiInterface {
                                     @Field("app_id") String appID,
                                     @Field("location") String location,
                                     @Field("api_token") String apiKey,
-                                    @Field("agent_info") String agentInfo
+                                    @Field("agent_info") String agentInfo,
+                                    @Field("android_id") String androidId
     );
 
     @FormUrlEncoded
@@ -36,7 +37,8 @@ public interface ApiInterface {
                                    @Field("app_id") String appID,
                                    @Field("location") String location,
                                    @Field("api_token") String apiKey,
-                                   @Field("agent_info") String agentInfo
+                                   @Field("agent_info") String agentInfo,
+                                   @Field("android_id") String androidId
     );
 
     @FormUrlEncoded
@@ -45,7 +47,9 @@ public interface ApiInterface {
                                   @Field("ad_unit_id") String adUnitId,
                                   @Field("app_id") String appId,
                                   @Field("api_token") String apiToken,
-                                  @Field("ad_event_id") int adEventid
+                                  @Field("ad_event_id") int adEventid,
+                                  @Field("agent_info") String agentInfo,
+                                  @Field("android_id") String androidId
     );
 
     @FormUrlEncoded
@@ -54,7 +58,9 @@ public interface ApiInterface {
                              @Field("ad_unit_id") String adUnitId,
                              @Field("app_id") String appId,
                              @Field("api_token") String apiToken,
-                             @Field("ad_event_id") int adEventid
+                             @Field("ad_event_id") int adEventid,
+                             @Field("agent_info") String agentInfo,
+                             @Field("android_id") String androidId
     );
 
 
@@ -62,14 +68,6 @@ public interface ApiInterface {
     Call<IpLocatoin> getLocation();
 
 
-    //custom api
-    @FormUrlEncoded
-    @POST("custom-adRequest")
-    Call<AdResponse> requestCustomAd(@Field("ad_unit_id") String adUnitId,
-                                     @Field("app_id") String appID,
-                                     @Field("location") String location,
-                                     @Field("api_token") String apiKey,
-                                     @Field("agent_info") String agentInfo
-    );
+
 
 }

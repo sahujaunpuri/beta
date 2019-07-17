@@ -1,0 +1,21 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.adfendo.beta" >
+
+    <application>
+        <activity android:name=".ads.AppInterstitialActivity" />
+        <activity android:name=".ads.InterstitialAdDefault" />
+        <activity android:name=".ads.VideoAd" />
+        <activity android:name=".ads.WebInterstitial" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+    </application>
+
+</manifest>

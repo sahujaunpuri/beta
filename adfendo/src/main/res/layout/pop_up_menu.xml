@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp"
+    >
+    <TextView
+        android:id="@+id/text_view_ad_by_fendomob"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ads by FendoMob"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:layout_marginRight="8dp"
+        android:textColor="@android:color/white"/>
+    <ImageView
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/multiply"
+        android:layout_gravity="center_vertical"/>
+</LinearLayout>

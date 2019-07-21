@@ -70,7 +70,6 @@ public class AppInterstitialActivity extends AppCompatActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
-
         if (getIntent().hasExtra(Constants.AD_CUSTOM_INTERSTITIAL)) {
             customInterstitialAd = getIntent().getParcelableExtra(Constants.AD_CUSTOM_INTERSTITIAL);
             adUnitId = getIntent().getStringExtra(Constants.AD_UNIT_IT);
@@ -88,15 +87,12 @@ public class AppInterstitialActivity extends AppCompatActivity {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 clickedTime = SystemClock.elapsedRealtime();
                 long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime) / 1000;
                 Toast.makeText(AppInterstitialActivity.this, "Difference :" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
-
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
                 }
-
                 mLastClickTime = SystemClock.elapsedRealtime();
                 saveDataToServer(true, customInterstitialAd.getAdId());
                 String[] appPackageName = customInterstitialAd.getAppUrl().split("=");
@@ -120,8 +116,6 @@ public class AppInterstitialActivity extends AppCompatActivity {
             display();
         }
     }
-
-
     private void display() {
         Glide.with(this).load(customInterstitialAd.getIntAdImageLink()).into(fullImage);
         description.setText(customInterstitialAd.getIntAdDescription());
@@ -131,7 +125,6 @@ public class AppInterstitialActivity extends AppCompatActivity {
         textViewRating.setText(customInterstitialAd.getAppRating());
         textViewTotalReview.setText(customInterstitialAd.getAppReview());
     }
-
     private void saveDataToServer(final boolean isClicked, final int adID) {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Key key = new Key();
@@ -153,24 +146,6 @@ public class AppInterstitialActivity extends AppCompatActivity {
                 Log.d(AppInterstitialActivity.class.getSimpleName(), "" + t.getMessage());
             }
         });
-
-
-//        Call<String> call = apiInterface.clickAd(customInterstitialAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), customInterstitialAd.getAdEventId());
-//        call.enqueue(new Callback<String>() {
-//            @Override
-//            public void onResponse(Call<String> call, Response<String> response) {
-//                if (isClicked) {
-//                    if (response.body().equals("success")) {
-//                        AdFendoInterstitialAd.interstitialAdListener.onClosed();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<String> call, Throwable t) {
-//                Log.d(AdFendo.class.getSimpleName(), "" + t.getMessage());
-//            }
-//        });
     }
 
     @Override

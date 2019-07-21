@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         adFendoInterstitialAd.setInterstitialAdListener(new InterstitialAdListener() {
             @Override
             public void onClosed() {
-//                adFendoInterstitialAd.requestAd();
+                adFendoInterstitialAd.requestAd();
 //               Toast.makeText(MainActivity.this, "onClosed called ", Toast.LENGTH_SHORT).show();
             }
 

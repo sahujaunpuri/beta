@@ -80,6 +80,8 @@ public class BannerAd extends LinearLayout {
     AdResponse adResponse;
     boolean loadAd = false;
     private long mLastClickTime = 0;
+    private long impressionTime = 0;
+    private long clickedTime = 0;
 
 
     public BannerAd(Context context, String adUnitId) {
@@ -170,6 +172,7 @@ public class BannerAd extends LinearLayout {
                         AdResponse adResponse = response.body();
                         if (adResponse.getImpression().equals("ok")) {
                             isIsImpressionSuccessfull = "0";
+                            impressionTime = SystemClock.elapsedRealtime();
                             isLoaded = false;
 
 
@@ -192,8 +195,9 @@ public class BannerAd extends LinearLayout {
         protected Void doInBackground(Void... voids) {
             apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
             Key key = new Key();
+            long diff = (impressionTime - SystemClock.elapsedRealtime())/1000;
             Call<AdResponse> call = apiInterface.clickAd(bannerAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), bannerAd.getAdEventId(),
-                    Utils.getAgentInfo(),AdFendo.getAndroidId());
+                    Utils.getAgentInfo(),AdFendo.getAndroidId(),diff);
             call.enqueue(new Callback<AdResponse>() {
                 @Override
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

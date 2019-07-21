@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class Video {
     @SerializedName("ad_id")
     @Expose
-    private Integer adId;
+    private int adId;
     @SerializedName("int_ad_title")
     @Expose
     private String intAdTitle;
@@ -51,16 +51,16 @@ public class Video {
     private String appButtonText;
     @SerializedName("ad_event_id")
     @Expose
-    private Integer adEventId;
+    private int adEventId;
     @SerializedName("video_link")
     @Expose
     private String videoLink;
 
-    public Integer getAdId() {
+    public int getAdId() {
         return adId;
     }
 
-    public void setAdId(Integer adId) {
+    public void setAdId(int adId) {
         this.adId = adId;
     }
 
@@ -176,11 +176,11 @@ public class Video {
         this.appButtonText = appButtonText;
     }
 
-    public Integer getAdEventId() {
+    public int getAdEventId() {
         return adEventId;
     }
 
-    public void setAdEventId(Integer adEventId) {
+    public void setAdEventId(int adEventId) {
         this.adEventId = adEventId;
     }
 

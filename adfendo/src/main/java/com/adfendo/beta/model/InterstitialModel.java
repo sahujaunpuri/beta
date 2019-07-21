@@ -10,7 +10,7 @@ public class InterstitialModel implements Parcelable {
 
     @SerializedName("ad_id")
     @Expose
-    private Integer adId;
+    private int adId;
     @SerializedName("int_ad_title")
     @Expose
     private String intAdTitle;
@@ -19,53 +19,6 @@ public class InterstitialModel implements Parcelable {
     @Expose
     private String appName;
 
-    protected InterstitialModel(Parcel in) {
-        if (in.readByte() == 0) {
-            adId = null;
-        } else {
-            adId = in.readInt();
-        }
-        intAdTitle = in.readString();
-        appName = in.readString();
-        adType = in.readString();
-        appImage = in.readString();
-        intAdDescription = in.readString();
-        intAdDescription1 = in.readString();
-        intAdImageLink = in.readString();
-        intAdImageLink1 = in.readString();
-        intAdImageLink2 = in.readString();
-        intAdImageLink3 = in.readString();
-        appUrl = in.readString();
-        appRating = in.readString();
-        appReview = in.readString();
-        appStatus = in.readString();
-        appButtonText = in.readString();
-        if (in.readByte() == 0) {
-            adEventId = null;
-        } else {
-            adEventId = in.readInt();
-        }
-    }
-
-    public static final Creator<InterstitialModel> CREATOR = new Creator<InterstitialModel>() {
-        @Override
-        public InterstitialModel createFromParcel(Parcel in) {
-            return new InterstitialModel(in);
-        }
-
-        @Override
-        public InterstitialModel[] newArray(int size) {
-            return new InterstitialModel[size];
-        }
-    };
-
-    public String getAdType() {
-        return adType;
-    }
-
-    public void setAdType(String adType) {
-        this.adType = adType;
-    }
 
     @SerializedName("ad_type")
     @Expose
@@ -108,13 +61,71 @@ public class InterstitialModel implements Parcelable {
     private String appButtonText;
     @SerializedName("ad_event_id")
     @Expose
-    private Integer adEventId;
+    private int adEventId;
 
-    public Integer getAdId() {
+    protected InterstitialModel(Parcel in) {
+        adId = in.readInt();
+        intAdTitle = in.readString();
+        appName = in.readString();
+        adType = in.readString();
+        appImage = in.readString();
+        intAdDescription = in.readString();
+        intAdDescription1 = in.readString();
+        intAdImageLink = in.readString();
+        intAdImageLink1 = in.readString();
+        intAdImageLink2 = in.readString();
+        intAdImageLink3 = in.readString();
+        appUrl = in.readString();
+        appRating = in.readString();
+        appReview = in.readString();
+        appStatus = in.readString();
+        appButtonText = in.readString();
+        adEventId = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(adId);
+        dest.writeString(intAdTitle);
+        dest.writeString(appName);
+        dest.writeString(adType);
+        dest.writeString(appImage);
+        dest.writeString(intAdDescription);
+        dest.writeString(intAdDescription1);
+        dest.writeString(intAdImageLink);
+        dest.writeString(intAdImageLink1);
+        dest.writeString(intAdImageLink2);
+        dest.writeString(intAdImageLink3);
+        dest.writeString(appUrl);
+        dest.writeString(appRating);
+        dest.writeString(appReview);
+        dest.writeString(appStatus);
+        dest.writeString(appButtonText);
+        dest.writeInt(adEventId);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<InterstitialModel> CREATOR = new Creator<InterstitialModel>() {
+        @Override
+        public InterstitialModel createFromParcel(Parcel in) {
+            return new InterstitialModel(in);
+        }
+
+        @Override
+        public InterstitialModel[] newArray(int size) {
+            return new InterstitialModel[size];
+        }
+    };
+
+    public int getAdId() {
         return adId;
     }
 
-    public void setAdId(Integer adId) {
+    public void setAdId(int adId) {
         this.adId = adId;
     }
 
@@ -132,6 +143,14 @@ public class InterstitialModel implements Parcelable {
 
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    public String getAdType() {
+        return adType;
+    }
+
+    public void setAdType(String adType) {
+        this.adType = adType;
     }
 
     public String getAppImage() {
@@ -230,47 +249,11 @@ public class InterstitialModel implements Parcelable {
         this.appButtonText = appButtonText;
     }
 
-    public Integer getAdEventId() {
+    public int getAdEventId() {
         return adEventId;
     }
 
-    public void setAdEventId(Integer adEventId) {
+    public void setAdEventId(int adEventId) {
         this.adEventId = adEventId;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (adId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(adId);
-        }
-        dest.writeString(intAdTitle);
-        dest.writeString(appName);
-        dest.writeString(adType);
-        dest.writeString(appImage);
-        dest.writeString(intAdDescription);
-        dest.writeString(intAdDescription1);
-        dest.writeString(intAdImageLink);
-        dest.writeString(intAdImageLink1);
-        dest.writeString(intAdImageLink2);
-        dest.writeString(intAdImageLink3);
-        dest.writeString(appUrl);
-        dest.writeString(appRating);
-        dest.writeString(appReview);
-        dest.writeString(appStatus);
-        dest.writeString(appButtonText);
-        if (adEventId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(adEventId);
-        }
     }
 }

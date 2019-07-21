@@ -10,7 +10,7 @@ public class CustomInterstitialModel implements Parcelable {
 
         @SerializedName("ad_id")
         @Expose
-        private Integer adId;
+        private int adId;
         @SerializedName("ad_type")
         @Expose
         private String adType;
@@ -58,154 +58,11 @@ public class CustomInterstitialModel implements Parcelable {
         private String appButtonText;
         @SerializedName("ad_event_id")
         @Expose
-        private Integer adEventId;
+        private int adEventId;
 
-    public Integer getAdId() {
-        return adId;
-    }
-
-    public void setAdId(Integer adId) {
-        this.adId = adId;
-    }
-
-    public String getAdType() {
-        return adType;
-    }
-
-    public void setAdType(String adType) {
-        this.adType = adType;
-    }
-
-    public String getIntAdTitle() {
-        return intAdTitle;
-    }
-
-    public void setIntAdTitle(String intAdTitle) {
-        this.intAdTitle = intAdTitle;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
-    public String getAppImage() {
-        return appImage;
-    }
-
-    public void setAppImage(String appImage) {
-        this.appImage = appImage;
-    }
-
-    public String getIntAdDescription() {
-        return intAdDescription;
-    }
-
-    public void setIntAdDescription(String intAdDescription) {
-        this.intAdDescription = intAdDescription;
-    }
-
-    public String getIntAdDescription1() {
-        return intAdDescription1;
-    }
-
-    public void setIntAdDescription1(String intAdDescription1) {
-        this.intAdDescription1 = intAdDescription1;
-    }
-
-    public String getIntAdImageLink() {
-        return intAdImageLink;
-    }
-
-    public void setIntAdImageLink(String intAdImageLink) {
-        this.intAdImageLink = intAdImageLink;
-    }
-
-    public String getIntAdImageLink1() {
-        return intAdImageLink1;
-    }
-
-    public void setIntAdImageLink1(String intAdImageLink1) {
-        this.intAdImageLink1 = intAdImageLink1;
-    }
-
-    public String getIntAdImageLink2() {
-        return intAdImageLink2;
-    }
-
-    public void setIntAdImageLink2(String intAdImageLink2) {
-        this.intAdImageLink2 = intAdImageLink2;
-    }
-
-    public String getIntAdImageLink3() {
-        return intAdImageLink3;
-    }
-
-    public void setIntAdImageLink3(String intAdImageLink3) {
-        this.intAdImageLink3 = intAdImageLink3;
-    }
-
-    public String getAppUrl() {
-        return appUrl;
-    }
-
-    public void setAppUrl(String appUrl) {
-        this.appUrl = appUrl;
-    }
-
-    public String getAppRating() {
-        return appRating;
-    }
-
-    public void setAppRating(String appRating) {
-        this.appRating = appRating;
-    }
-
-    public String getAppReview() {
-        return appReview;
-    }
-
-    public void setAppReview(String appReview) {
-        this.appReview = appReview;
-    }
-
-    public String getAppStatus() {
-        return appStatus;
-    }
-
-    public void setAppStatus(String appStatus) {
-        this.appStatus = appStatus;
-    }
-
-    public String getAppButtonText() {
-        return appButtonText;
-    }
-
-    public void setAppButtonText(String appButtonText) {
-        this.appButtonText = appButtonText;
-    }
-
-    public Integer getAdEventId() {
-        return adEventId;
-    }
-
-    public void setAdEventId(Integer adEventId) {
-        this.adEventId = adEventId;
-    }
-
-    public static Creator<CustomInterstitialModel> getCREATOR() {
-        return CREATOR;
-    }
 
     protected CustomInterstitialModel(Parcel in) {
-        if (in.readByte() == 0) {
-            adId = null;
-        } else {
-            adId = in.readInt();
-        }
+        adId = in.readInt();
         adType = in.readString();
         intAdTitle = in.readString();
         appName = in.readString();
@@ -221,38 +78,12 @@ public class CustomInterstitialModel implements Parcelable {
         appReview = in.readString();
         appStatus = in.readString();
         appButtonText = in.readString();
-        if (in.readByte() == 0) {
-            adEventId = null;
-        } else {
-            adEventId = in.readInt();
-        }
-    }
-
-    public static final Creator<CustomInterstitialModel> CREATOR = new Creator<CustomInterstitialModel>() {
-        @Override
-        public CustomInterstitialModel createFromParcel(Parcel in) {
-            return new CustomInterstitialModel(in);
-        }
-
-        @Override
-        public CustomInterstitialModel[] newArray(int size) {
-            return new CustomInterstitialModel[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
+        adEventId = in.readInt();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        if (adId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(adId);
-        }
+        dest.writeInt(adId);
         dest.writeString(adType);
         dest.writeString(intAdTitle);
         dest.writeString(appName);
@@ -268,12 +99,92 @@ public class CustomInterstitialModel implements Parcelable {
         dest.writeString(appReview);
         dest.writeString(appStatus);
         dest.writeString(appButtonText);
-        if (adEventId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(adEventId);
+        dest.writeInt(adEventId);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<CustomInterstitialModel> CREATOR = new Creator<CustomInterstitialModel>() {
+        @Override
+        public CustomInterstitialModel createFromParcel(Parcel in) {
+            return new CustomInterstitialModel(in);
         }
+
+        @Override
+        public CustomInterstitialModel[] newArray(int size) {
+            return new CustomInterstitialModel[size];
+        }
+    };
+
+    public int getAdId() {
+        return adId;
+    }
+
+    public String getAdType() {
+        return adType;
+    }
+
+    public String getIntAdTitle() {
+        return intAdTitle;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public String getAppImage() {
+        return appImage;
+    }
+
+    public String getIntAdDescription() {
+        return intAdDescription;
+    }
+
+    public String getIntAdDescription1() {
+        return intAdDescription1;
+    }
+
+    public String getIntAdImageLink() {
+        return intAdImageLink;
+    }
+
+    public String getIntAdImageLink1() {
+        return intAdImageLink1;
+    }
+
+    public String getIntAdImageLink2() {
+        return intAdImageLink2;
+    }
+
+    public String getIntAdImageLink3() {
+        return intAdImageLink3;
+    }
+
+    public String getAppUrl() {
+        return appUrl;
+    }
+
+    public String getAppRating() {
+        return appRating;
+    }
+
+    public String getAppReview() {
+        return appReview;
+    }
+
+    public String getAppStatus() {
+        return appStatus;
+    }
+
+    public String getAppButtonText() {
+        return appButtonText;
+    }
+
+    public int getAdEventId() {
+        return adEventId;
     }
 }
 

@@ -11,7 +11,7 @@ public class WebInterstitialModel implements Parcelable {
 
     @SerializedName("ad_id")
     @Expose
-    private Integer adId;
+    private int adId;
     @SerializedName("ad_type")
     @Expose
     private String adType;
@@ -41,13 +41,13 @@ public class WebInterstitialModel implements Parcelable {
     private String appUrl;
     @SerializedName("ad_event_id")
     @Expose
-    private Integer adEventId;
+    private int adEventId;
 
-    public Integer getAdId() {
+    public int getAdId() {
         return adId;
     }
 
-    public void setAdId(Integer adId) {
+    public void setAdId(int adId) {
         this.adId = adId;
     }
 
@@ -123,11 +123,11 @@ public class WebInterstitialModel implements Parcelable {
         this.appUrl = appUrl;
     }
 
-    public Integer getAdEventId() {
+    public int getAdEventId() {
         return adEventId;
     }
 
-    public void setAdEventId(Integer adEventId) {
+    public void setAdEventId(int adEventId) {
         this.adEventId = adEventId;
     }
 
@@ -136,11 +136,7 @@ public class WebInterstitialModel implements Parcelable {
     }
 
     protected WebInterstitialModel(Parcel in) {
-        if (in.readByte() == 0) {
-            adId = null;
-        } else {
-            adId = in.readInt();
-        }
+        adId = in.readInt();
         adType = in.readString();
         intAdTitle = in.readString();
         appName = in.readString();
@@ -150,11 +146,27 @@ public class WebInterstitialModel implements Parcelable {
         webAdVideoLink = in.readString();
         intAdImageLink = in.readString();
         appUrl = in.readString();
-        if (in.readByte() == 0) {
-            adEventId = null;
-        } else {
-            adEventId = in.readInt();
-        }
+        adEventId = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(adId);
+        dest.writeString(adType);
+        dest.writeString(intAdTitle);
+        dest.writeString(appName);
+        dest.writeString(appImage);
+        dest.writeString(webUrl);
+        dest.writeString(webAdImageLink);
+        dest.writeString(webAdVideoLink);
+        dest.writeString(intAdImageLink);
+        dest.writeString(appUrl);
+        dest.writeInt(adEventId);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<WebInterstitialModel> CREATOR = new Creator<WebInterstitialModel>() {
@@ -168,34 +180,4 @@ public class WebInterstitialModel implements Parcelable {
             return new WebInterstitialModel[size];
         }
     };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (adId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(adId);
-        }
-        dest.writeString(adType);
-        dest.writeString(intAdTitle);
-        dest.writeString(appName);
-        dest.writeString(appImage);
-        dest.writeString(webUrl);
-        dest.writeString(webAdImageLink);
-        dest.writeString(webAdVideoLink);
-        dest.writeString(intAdImageLink);
-        dest.writeString(appUrl);
-        if (adEventId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(adEventId);
-        }
-    }
 }

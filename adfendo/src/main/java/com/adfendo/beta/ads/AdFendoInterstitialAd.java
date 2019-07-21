@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
@@ -23,13 +22,10 @@ import com.adfendo.beta.utilities.Constants;
 import com.adfendo.beta.utilities.ErrorCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
-
 import java.io.IOException;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 public class AdFendoInterstitialAd {
 
@@ -41,15 +37,12 @@ public class AdFendoInterstitialAd {
     private static CustomInterstitialModel customInterstitialModel;
     private static WebInterstitialModel webInterstitialModel;
     static InterstitialAdListener interstitialAdListener;
-
     private String location= ",";
     private int eventId;
     private int adId;
     private Key key;
     private static final String TAG = "AdFendoInterstitialAd";
-
     public static long impressionMillisecond=0;
-
     private long clickedMillisecond;
     public AdFendoInterstitialAd(Context context, String adUnitID) {
         AdFendoInterstitialAd.ctx = context;
@@ -59,7 +52,6 @@ public class AdFendoInterstitialAd {
     public void setInterstitialAdListener(InterstitialAdListener interstitialAdListener) {
         AdFendoInterstitialAd.interstitialAdListener = interstitialAdListener;
     }
-
     public void requestAd() {
         if (!unitId.equals("")) {
             if (!AppID.getAppId().equals("")) {
@@ -83,35 +75,47 @@ public class AdFendoInterstitialAd {
     public void showAd() {
         if (checkConnection()) {
             if (isLoaded) {
-                switch (adResponse.getAdType()) {
-                    case Constants.DEFAULT: {
-                        interstitialModel = adResponse.getInterstitial();
-                        Intent intent = new Intent(ctx, InterstitialAdDefault.class);
-                        intent.putExtra(Constants.AD_UNIT_IT, unitId);
-                        intent.putExtra(Constants.AD_INTERSTITIAL, interstitialModel);
-                        ctx.startActivity(intent);
-                        break;
+                if (adResponse != null){
+                    switch (adResponse.getAdType()) {
+                        case Constants.DEFAULT: {
+                            interstitialModel = adResponse.getInterstitial();
+                            Intent intent = new Intent(ctx, InterstitialAdDefault.class);
+                            intent.putExtra(Constants.AD_UNIT_IT, unitId);
+                            intent.putExtra(Constants.AD_INTERSTITIAL, interstitialModel);
+                            ctx.startActivity(intent);
+                            setIsLoaded(false);
+                            adResponse = null;
+                            break;
+                        }
+                        case Constants.CUSTOM: {
+                            //todo custom ad interstitial
+                            customInterstitialModel = adResponse.getCustomInterstitialAd();
+                            Intent intent = new Intent(ctx, AppInterstitialActivity.class);
+                            intent.putExtra(Constants.AD_UNIT_IT, unitId);
+                            intent.putExtra(Constants.AD_CUSTOM_INTERSTITIAL, customInterstitialModel);
+                            ctx.startActivity(intent);
+                            setIsLoaded(false);
+                            adResponse = null;
+                            break;
+                        }
+                        case Constants.WEB: {
+                            //todo web ad interstitial
+                            webInterstitialModel = adResponse.getWebInterstitialModel();
+                            Intent intent = new Intent(ctx, WebInterstitial.class);
+                            intent.putExtra(Constants.AD_UNIT_IT, unitId);
+                            intent.putExtra(Constants.AD_WEB_INTERSTITIAL, webInterstitialModel);
+                            ctx.startActivity(intent);
+                            setIsLoaded(false);
+                            adResponse = null;
+                            break;
+
+                        }
                     }
-                    case Constants.CUSTOM: {
-                        //todo custom ad interstitial
-                        customInterstitialModel = adResponse.getCustomInterstitialAd();
-                        Intent intent = new Intent(ctx, AppInterstitialActivity.class);
-                        intent.putExtra(Constants.AD_UNIT_IT, unitId);
-                        intent.putExtra(Constants.AD_CUSTOM_INTERSTITIAL, customInterstitialModel);
-                        ctx.startActivity(intent);
-                        break;
-                    }
-                    case Constants.WEB: {
-                        //todo web ad interstitial
-                        webInterstitialModel = adResponse.getWebInterstitialModel();
-                        Intent intent = new Intent(ctx, WebInterstitial.class);
-                        intent.putExtra(Constants.AD_UNIT_IT, unitId);
-                        intent.putExtra(Constants.AD_WEB_INTERSTITIAL, webInterstitialModel);
-                        ctx.startActivity(intent);
-                        break;
-                    }
+                    new ImpressionInBaground().execute();
+                }else{
+                    interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
                 }
-                new ImpressionInBaground().execute();
+
             }
         } else {
             interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);

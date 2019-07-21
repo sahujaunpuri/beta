@@ -7,7 +7,7 @@ public class Banner {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private int id;
     @SerializedName("app_name")
     @Expose
     private String appName;
@@ -16,10 +16,10 @@ public class Banner {
     private String appUrl;
     @SerializedName("adv_id")
     @Expose
-    private Integer advId;
+    private int advId;
     @SerializedName("ad_id")
     @Expose
-    private Integer adId;
+    private int adId;
     @SerializedName("app_image")
     @Expose
     private String appImage;
@@ -40,13 +40,13 @@ public class Banner {
     private String appStatus;
     @SerializedName("ad_event_id")
     @Expose
-    private Integer adEventId;
+    private int adEventId;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -66,19 +66,19 @@ public class Banner {
         this.appUrl = appUrl;
     }
 
-    public Integer getAdvId() {
+    public int getAdvId() {
         return advId;
     }
 
-    public void setAdvId(Integer advId) {
+    public void setAdvId(int advId) {
         this.advId = advId;
     }
 
-    public Integer getAdId() {
+    public int getAdId() {
         return adId;
     }
 
-    public void setAdId(Integer adId) {
+    public void setAdId(int adId) {
         this.adId = adId;
     }
 
@@ -130,11 +130,11 @@ public class Banner {
         this.appStatus = appStatus;
     }
 
-    public Integer getAdEventId() {
+    public int getAdEventId() {
         return adEventId;
     }
 
-    public void setAdEventId(Integer adEventId) {
+    public void setAdEventId(int adEventId) {
         this.adEventId = adEventId;
     }
 }

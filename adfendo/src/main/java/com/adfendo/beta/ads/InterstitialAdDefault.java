@@ -136,16 +136,13 @@ public class InterstitialAdDefault extends AppCompatActivity {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 clickedTime = SystemClock.elapsedRealtime();
                 long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime)/1000;
                 Toast.makeText(InterstitialAdDefault.this, "Difference :"+differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
-
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
                 }
                 mLastClickTime = SystemClock.elapsedRealtime();
-
                 saveDataToServer(true, interstitialModel.getAdId());
                 String[] appPackageName = interstitialModel.getAppUrl().split("=");
                 try {
@@ -215,10 +212,6 @@ public class InterstitialAdDefault extends AppCompatActivity {
     public void setIsLoaded(boolean isLoaded) {
         this.isLoaded = isLoaded;
     }
-
-//    public void requestAd() {
-//        new LoadAdInBackGround().execute();
-//    }
 
     private void display() {
         color = randomAndroidColor;
@@ -298,63 +291,6 @@ public class InterstitialAdDefault extends AppCompatActivity {
             });
         }
     }
-
-//    @SuppressLint("StaticFieldLeak")
-//    private class LoadAdInBackGround extends AsyncTask<Void, Void, Void> {
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//            if (AppID.getAppId() != null) {
-//                Key key = new Key();
-//                apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-//                String agent =  Utils.getAgentInfo();
-//                Call<AdResponse> call = apiInterface.requestAd(addUnitId, AppID.getAppId(), Utils.location, key.getApiKey(),agent);
-//                call.enqueue(new Callback<AdResponse>() {
-//                    @Override
-//                    public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
-//                        adResponse = response.body();
-//                        switch (adResponse.getCode()) {
-//                            case ErrorCode.AD_NOT_AVAILABLE:
-//                                interstitialAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
-//                                setIsLoaded(false);
-//                                break;
-//                            case ErrorCode.INVALID_API:
-//                                interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_API);
-//                                setIsLoaded(false);
-//                                break;
-//                            case ErrorCode.INVALID_AD_UNIT_ID:
-//                                interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_AD_UNIT_ID);
-//                                setIsLoaded(false);
-//                                break;
-//                            case ErrorCode.APP_ID_NOT_ACTIVE:
-//                                interstitialAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_ACTIVE);
-//                                break;
-//                            case ErrorCode.APP_NOT_ACTIVE:
-//                                interstitialAdListener.onFailedToLoad(ErrorCode.APP_NOT_ACTIVE);
-//                                break;
-//                            case ErrorCode.VALID_RESPONSE:
-//                                if (adResponse.getInterstitial() != null) {
-//                                    interstitialModel = adResponse.getInterstitial();
-//
-//                                    setIsLoaded(true);
-//                                    interstitialAdListener.isLoaded(isLoaded());
-//                                }
-//                                break;
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<AdResponse> call, Throwable t) {
-//                        interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
-//                        Log.d(InterstitialAdDefault.class.getSimpleName(), t.getMessage());
-//                    }
-//                });
-//            } else {
-//                interstitialAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_INITIALIZED);
-//            }
-//            return null;
-//        }
-//    }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();

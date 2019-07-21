@@ -107,6 +107,8 @@ public class VideoAd extends AppCompatActivity {
 
     private long review = 0;
     private long mLastClickTime = 0;
+    private long clickedTime = 0;
+    private long impressionTime = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -145,7 +147,7 @@ public class VideoAd extends AppCompatActivity {
                     return;
                 }
                 mLastClickTime = SystemClock.elapsedRealtime();
-
+                clickedTime= SystemClock.elapsedRealtime();
 
                 saveDataToServer(true, String.valueOf(video.getAdId()));
                 String[] appPackageName = video.getAppUrl().split("=");
@@ -259,14 +261,12 @@ public class VideoAd extends AppCompatActivity {
 
     public void showVideoAd() {
         if (checkConnection()) {
-
             Intent intent = new Intent(this.context, VideoAd.class);
             this.context.startActivity(intent);
         } else {
             videoAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
         }
     }
-
     public void requestAd() {
         new LoadAdInBackGround().execute();
     }
@@ -322,7 +322,6 @@ public class VideoAd extends AppCompatActivity {
                                 videoAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
                             }
                         }
-
                         @Override
                         public void onFailure(Call<AdResponse> call, Throwable t) {
                             isLoaded = false;
@@ -357,6 +356,7 @@ public class VideoAd extends AppCompatActivity {
 
                         if (adResponse.getImpression().equals("ok")) {
                             videoAdListener.onImpression();
+                            impressionTime= SystemClock.elapsedRealtimeNanos();
                             isIsImpressionSuccessfull = "0";
                             isLoaded = false;
                         } else {
@@ -379,7 +379,15 @@ public class VideoAd extends AppCompatActivity {
     private void saveDataToServer(final boolean isClicked, String adID) {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Key key = new Key();
-        Call<AdResponse> call = apiInterface.clickAd(video.getAdId(), addUnitId, AppID.getAppId(), key.getApiKey(), video.getAdEventId(),Utils.getAgentInfo(),AdFendo.getAndroidId());
+        long diff = (impressionTime - clickedTime)/1000;
+        Call<AdResponse> call = apiInterface.clickAd(video.getAdId(),
+                addUnitId,
+                AppID.getAppId(),
+                key.getApiKey(),
+                video.getAdEventId(),
+                Utils.getAgentInfo(),
+                AdFendo.getAndroidId(),
+                diff );
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

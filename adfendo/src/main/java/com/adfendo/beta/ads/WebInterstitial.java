@@ -34,14 +34,12 @@ import retrofit2.Response;
 
 
 public class WebInterstitial extends AppCompatActivity {
-
     private  WebInterstitialModel webInterstitialModel;
     private String adUnitId = "";
     private ImageView imageViewWeb;
     private Button cancelButton;
     private boolean isLoaded;
     private long clickedTime;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +63,7 @@ public class WebInterstitial extends AppCompatActivity {
             public void onClick(View v) {
                 clickedTime = SystemClock.elapsedRealtime();
                 long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime)/1000;
-                Toast.makeText(WebInterstitial.this, "Difference :"+differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
-
+//                Toast.makeText(WebInterstitial.this, "Difference :"+differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
                 saveDataToServer(true, webInterstitialModel.getAdId());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInterstitialModel.getWebUrl()));
                 startActivity(browserIntent);
@@ -82,7 +79,6 @@ public class WebInterstitial extends AppCompatActivity {
             }
         });
     }
-
     private void saveDataToServer(final boolean isClicked, final int adID) {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Key key = new Key();
@@ -106,7 +102,6 @@ public class WebInterstitial extends AppCompatActivity {
                     finish();
                 }
             }
-
             @Override
             public void onFailure(Call<AdResponse> call, Throwable t) {
                 Log.d(AdFendo.class.getSimpleName(), "" + t.getMessage());
@@ -115,9 +110,6 @@ public class WebInterstitial extends AppCompatActivity {
             }
         });
     }
-
-
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();

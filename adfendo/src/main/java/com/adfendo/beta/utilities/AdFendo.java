@@ -9,8 +9,6 @@ public class AdFendo {
     private static final String TAG = "AdFendo";
 
     public static  String ANDROID_ID = "";
-    public static  String AGENT_INFO = "";
-
     public AdFendo() {
     }
 

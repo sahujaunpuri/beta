@@ -38,7 +38,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class AppInterstitialActivity extends AppCompatActivity {
+public class CustomInterstitialActivity extends AppCompatActivity {
 
     private ImageView appLogo;
     private TextView textViewAppName;
@@ -89,7 +89,7 @@ public class AppInterstitialActivity extends AppCompatActivity {
             public void onClick(View v) {
                 clickedTime = SystemClock.elapsedRealtime();
                 long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime) / 1000;
-                Toast.makeText(AppInterstitialActivity.this, "Difference :" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
+                Toast.makeText(CustomInterstitialActivity.this, "Difference :" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
                 }
@@ -143,7 +143,7 @@ public class AppInterstitialActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<AdResponse> call, Throwable t) {
-                Log.d(AppInterstitialActivity.class.getSimpleName(), "" + t.getMessage());
+                Log.d(CustomInterstitialActivity.class.getSimpleName(), "" + t.getMessage());
             }
         });
     }

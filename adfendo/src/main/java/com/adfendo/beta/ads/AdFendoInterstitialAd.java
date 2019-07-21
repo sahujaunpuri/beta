@@ -42,7 +42,7 @@ public class AdFendoInterstitialAd {
     private int adId;
     private Key key;
     private static final String TAG = "AdFendoInterstitialAd";
-    public static long impressionMillisecond=0;
+    public static long impressionMillisecond = 0;
     private long clickedMillisecond;
     public AdFendoInterstitialAd(Context context, String adUnitID) {
         AdFendoInterstitialAd.ctx = context;
@@ -90,7 +90,7 @@ public class AdFendoInterstitialAd {
                         case Constants.CUSTOM: {
                             //todo custom ad interstitial
                             customInterstitialModel = adResponse.getCustomInterstitialAd();
-                            Intent intent = new Intent(ctx, AppInterstitialActivity.class);
+                            Intent intent = new Intent(ctx, CustomInterstitialActivity.class);
                             intent.putExtra(Constants.AD_UNIT_IT, unitId);
                             intent.putExtra(Constants.AD_CUSTOM_INTERSTITIAL, customInterstitialModel);
                             ctx.startActivity(intent);
@@ -108,14 +108,12 @@ public class AdFendoInterstitialAd {
                             setIsLoaded(false);
                             adResponse = null;
                             break;
-
                         }
                     }
-                    new ImpressionInBaground().execute();
+                    new ImpressionInBackground().execute();
                 }else{
                     interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
                 }
-
             }
         } else {
             interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
@@ -143,7 +141,6 @@ public class AdFendoInterstitialAd {
         }
         return false;
     }
-
     @SuppressLint("StaticFieldLeak")
     private class LocationInBackground extends AsyncTask<Void, Void, Void> {
         @Override
@@ -163,7 +160,7 @@ public class AdFendoInterstitialAd {
                 }
                 @Override
                 public void onFailure(Call<IpLocatoin> call, Throwable t) {
-//                    interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
+                    Log.d(TAG, "onFailure: "+t.getMessage());
                 }
             });
             return null;
@@ -173,19 +170,17 @@ public class AdFendoInterstitialAd {
     private void requestForAd() {
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         String agent = Utils.getAgentInfo();
-        String deviceId="";
+        String deviceId = "";
         try {
             deviceId = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
         }catch (Exception e){
             Log.d(TAG, "requestForAd: "+e.getMessage());
         }
-
         Call<AdResponse> call = apiInterface.requestAd(unitId, AppID.getAppId(), Utils.location, key.getApiKey(),agent,deviceId);
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 adResponse = response.body();
-
                 switch (adResponse.getCode()) {
                     case ErrorCode.AD_NOT_AVAILABLE:
                         interstitialAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
@@ -203,7 +198,6 @@ public class AdFendoInterstitialAd {
                         interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_AD_UNIT_ID);
                         setIsLoaded(false);
                         break;
-
                     case ErrorCode.APP_ID_NOT_ACTIVE:
                         interstitialAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_ACTIVE);
                         break;
@@ -244,7 +238,7 @@ public class AdFendoInterstitialAd {
         });
     }
     @SuppressLint("StaticFieldLeak")
-    private class ImpressionInBaground extends AsyncTask<Void, Void, Void> {
+    private class ImpressionInBackground extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
             ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -267,7 +261,6 @@ public class AdFendoInterstitialAd {
                 @Override
                 public void onFailure(Call<AdResponse> call, Throwable t) {
                     Log.d(TAG, "onFailure: " + t.getMessage());
-
                 }
             });
             return null;

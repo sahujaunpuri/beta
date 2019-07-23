@@ -25,7 +25,6 @@ import com.adfendo.beta.adapter.SliderImageAdapter;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
 
-import com.adfendo.beta.interfaces.AdOnCloseListener;
 import com.adfendo.beta.interfaces.InterstitialAdListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.InterstitialModel;
@@ -51,7 +50,7 @@ import retrofit2.Response;
 
 public class InterstitialAdDefault extends AppCompatActivity {
     private static final String TAG = "InterstitialModel";
-    static InterstitialAdListener interstitialAdListener;
+    InterstitialAdListener interstitialAdListener;
     private static String addUnitId;
     ApiInterface apiInterface;
     private static boolean isLoaded = false;
@@ -60,12 +59,27 @@ public class InterstitialAdDefault extends AppCompatActivity {
     private static InterstitialModel interstitialModel;
     private static List<String> listOfImages;
     ViewPager viewPager;
-    public static Context context;
+    private Context context;
     private boolean isNetworkAvailable = false;
-
-    AdOnCloseListener adOnCloseListener;
-
+    InterstitialAdListener listener;
     private long mLastClickTime = 0;
+    //your activity listener interface
+    private static InterstitialAdCloseListener onClosedListener;
+
+    public void setListener(InterstitialAdCloseListener listener) {
+        this.onClosedListener = listener;
+    }
+
+    public interface InterstitialAdCloseListener {
+        void onCloseListener();
+    }
+
+
+    public void setInterstitialAdListener(InterstitialAdListener interstitialAdListener) {
+        this.listener = interstitialAdListener;
+        this.context = context;
+
+    }
 
     public InterstitialAdDefault() {
     }
@@ -92,10 +106,11 @@ public class InterstitialAdDefault extends AppCompatActivity {
     AdResponse adResponse;
 
     String adUnitId = "";
-   long  clickedTime;
-    public void setListener(InterstitialAdListener interstitialAdListener) {
-        InterstitialAdDefault.interstitialAdListener = interstitialAdListener;
-    }
+    long clickedTime;
+    long differenceBetweenImpAndClick;
+//    public void setListener(InterstitialAdListener interstitialAdListener) {
+//        InterstitialAdDefault.interstitialAdListener = interstitialAdListener;
+//    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,6 +127,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
             interstitialModel = getIntent().getParcelableExtra(Constants.AD_INTERSTITIAL);
             adUnitId = getIntent().getStringExtra(Constants.AD_UNIT_IT);
         }
+
 
         listOfImages = new ArrayList<>();
         listOfImages.add(interstitialModel.getIntAdImageLink1());
@@ -137,8 +153,8 @@ public class InterstitialAdDefault extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 clickedTime = SystemClock.elapsedRealtime();
-                long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime)/1000;
-                Toast.makeText(InterstitialAdDefault.this, "Difference :"+differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
+                differenceBetweenImpAndClick = Math.abs(clickedTime - AdFendoInterstitialAd.impressionMillisecond) / 1000;
+                Toast.makeText(InterstitialAdDefault.this, "Difference :" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
                 }
@@ -157,7 +173,10 @@ public class InterstitialAdDefault extends AppCompatActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AdFendoInterstitialAd.interstitialAdListener.onClosed();
+//                AdFendoInterstitialAd.interstitialAdListener.onClosed();
+                if (onClosedListener != null){
+                    onClosedListener.onCloseListener();
+                }
                 finish();
             }
         });
@@ -249,18 +268,22 @@ public class InterstitialAdDefault extends AppCompatActivity {
                 adUnitId,
                 AppID.getAppId(),
                 key.getApiKey(),
-                interstitialModel.getAdEventId(), Utils.getAgentInfo(), AdFendo.getAndroidId(),clickedTime
-                );
+                interstitialModel.getAdEventId(),
+                Utils.getAgentInfo(), AdFendo.getAndroidId(),
+                differenceBetweenImpAndClick
+        );
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 AdResponse adResponse = response.body();
                 if (isClicked) {
-                    if (adResponse.getClick().equals("ok")) {
-                        setIsLoaded(false);
-                        AdFendoInterstitialAd.interstitialAdListener.isLoaded(isLoaded);
+                    if (adResponse.getCode() == 200) {
+                        Log.d(TAG, "onResponse: Impression ok");
                     }
-                    AdFendoInterstitialAd.interstitialAdListener.onClosed();
+
+                }
+                if (onClosedListener != null){
+                    onClosedListener.onCloseListener();
                 }
                 finish();
             }
@@ -268,7 +291,9 @@ public class InterstitialAdDefault extends AppCompatActivity {
             @Override
             public void onFailure(Call<AdResponse> call, Throwable t) {
                 Log.d(AdFendo.class.getSimpleName(), "" + t.getMessage());
-                AdFendoInterstitialAd.interstitialAdListener.onClosed();
+                if (onClosedListener != null){
+                    onClosedListener.onCloseListener();
+                }
                 finish();
             }
         });
@@ -291,10 +316,21 @@ public class InterstitialAdDefault extends AppCompatActivity {
             });
         }
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        AdFendoInterstitialAd.interstitialAdListener.onClosed();
+        if (onClosedListener != null){
+            onClosedListener.onCloseListener();
+        }
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (onClosedListener != null){
+            onClosedListener = null;
+        }
     }
 }

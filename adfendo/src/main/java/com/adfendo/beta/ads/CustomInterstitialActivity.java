@@ -1,5 +1,6 @@
 package com.adfendo.beta.ads;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -22,11 +23,13 @@ import com.adfendo.beta.adapter.SliderImageAdapter;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
 
+import com.adfendo.beta.interfaces.InterstitialAdListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.CustomInterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
+import com.adfendo.beta.utilities.ErrorCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
@@ -54,10 +57,22 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     private AdResponse adResponse;
     private String adUnitId = "";
 
-    private CustomInterstitialModel customInterstitialAd;
+    private static CustomInterstitialModel customInterstitialAd;
     private ImageView fullImage;
     private long mLastClickTime = 0;
     long clickedTime;
+
+    private Context context;
+    private static InterstitialAdListener listener;
+
+    CustomAdClosedListener onClosedListener;
+
+    public void setListener(CustomAdClosedListener listener) {
+        this.onClosedListener = listener;
+    }
+    public interface CustomAdClosedListener{
+        void onCustomAdClosed();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +123,9 @@ public class CustomInterstitialActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AdFendoInterstitialAd.interstitialAdListener.onClosed();
+                if (onClosedListener != null){
+                    onClosedListener.onCustomAdClosed();
+                }
                 finish();
             }
         });
@@ -135,8 +152,10 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 AdResponse adResponse = response.body();
                 if (isClicked) {
-                    if (adResponse.getClick().equals("ok")) {
-                        AdFendoInterstitialAd.interstitialAdListener.onClosed();
+                    if (adResponse.getCode()== ErrorCode.VALID_RESPONSE) {
+                        if (onClosedListener != null){
+                            onClosedListener.onCustomAdClosed();
+                        }
                     }
                 }
             }
@@ -151,8 +170,18 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        AdFendoInterstitialAd.interstitialAdListener.onClosed();
+        if (onClosedListener != null){
+            onClosedListener.onCustomAdClosed();
+        }
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (onClosedListener != null){
+            onClosedListener = null;
+        }
     }
 
     public boolean checkConnection() {

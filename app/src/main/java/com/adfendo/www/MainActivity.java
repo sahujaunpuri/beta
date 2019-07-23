@@ -18,12 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Debug";
 
     Button interstetialButton;
-    Button bannerButton;
-    BannerAd bannerAd;
     Button videoButton;
 
-
-    VideoAd videoAd;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,30 +69,30 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
         adFendoInterstitialAd = new AdFendoInterstitialAd(this, "pub-ad-unit-id-704441634~910330028");
-        adFendoInterstitialAd.setInterstitialAdListener(new InterstitialAdListener() {
-            @Override
-            public void onClosed() {
-                adFendoInterstitialAd.requestAd();
-//               Toast.makeText(MainActivity.this, "onClosed called ", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailedToLoad(int errorMessage) {
-                Toast.makeText(MainActivity.this, "onFailed " + errorMessage, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void isLoaded(boolean isLoaded) {
-
-//                Toast.makeText(MainActivity.this, "Interstitial isLoaded "+isLoaded, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onImpression() {
-//                Toast.makeText(MainActivity.this, "onImpression called", Toast.LENGTH_SHORT).show();
-            }
-        });
         adFendoInterstitialAd.requestAd();
+
+//        adFendoInterstitialAd.setInterstitialAdListener(new InterstitialAdListener() {
+//            @Override
+//            public void onClosed() {
+//                adFendoInterstitialAd.requestAd();
+////               Toast.makeText(MainActivity.this, "onClosed called ", Toast.LENGTH_SHORT).show();
+//            }
+//            @Override
+//            public void onFailedToLoad(int errorMessage) {
+//                Toast.makeText(MainActivity.this, "onFailed " + errorMessage, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void isLoaded(boolean isLoaded) {
+//                Toast.makeText(MainActivity.this, "Interstitial isLoaded "+isLoaded, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onImpression() {
+//                Toast.makeText(MainActivity.this, "onImpression called", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
         interstetialButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,10 +101,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(MainActivity.this, "something went error", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
-
 //        BannerAd bannerAd = new BannerAd(this, "pub-ad-unit-id-704441634~759229480");
 //        bannerAd.setOnBannerAdListener(new BannerAdListener() {
 //            @Override

@@ -22,12 +22,14 @@ import com.adfendo.beta.utilities.Constants;
 import com.adfendo.beta.utilities.ErrorCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
+
 import java.io.IOException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AdFendoInterstitialAd {
+public class AdFendoInterstitialAd implements InterstitialAdDefault.InterstitialAdCloseListener, WebInterstitial.WebAdCloseListener, CustomInterstitialActivity.CustomAdClosedListener {
 
     private static Context ctx;
     private String unitId;
@@ -36,22 +38,29 @@ public class AdFendoInterstitialAd {
     private static InterstitialModel interstitialModel;
     private static CustomInterstitialModel customInterstitialModel;
     private static WebInterstitialModel webInterstitialModel;
-    static InterstitialAdListener interstitialAdListener;
-    private String location= ",";
+    private InterstitialAdListener interstitialAdListener;
+    private String location = ",";
     private int eventId;
     private int adId;
     private Key key;
+    InterstitialAdDefault defaultAd;
+    CustomInterstitialActivity custom;
+    WebInterstitial webInterstitial;
     private static final String TAG = "AdFendoInterstitialAd";
     public static long impressionMillisecond = 0;
     private long clickedMillisecond;
+
+
     public AdFendoInterstitialAd(Context context, String adUnitID) {
         AdFendoInterstitialAd.ctx = context;
         this.unitId = adUnitID;
         key = new Key();
     }
+
     public void setInterstitialAdListener(InterstitialAdListener interstitialAdListener) {
-        AdFendoInterstitialAd.interstitialAdListener = interstitialAdListener;
+        this.interstitialAdListener = interstitialAdListener;
     }
+
     public void requestAd() {
         if (!unitId.equals("")) {
             if (!AppID.getAppId().equals("")) {
@@ -62,22 +71,32 @@ public class AdFendoInterstitialAd {
                         requestForAd();
                     }
                 } else {
-                    interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
+                    if (interstitialAdListener != null) {
+                        interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
+                    }
                 }
             } else {
-                interstitialAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_INITIALIZED);
+                if (interstitialAdListener != null) {
+                    interstitialAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_INITIALIZED);
+                }
             }
         } else {
-            interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_AD_UNIT_ID);
+            if (interstitialAdListener != null) {
+                interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_AD_UNIT_ID);
+            }
         }
     }
 
     public void showAd() {
         if (checkConnection()) {
             if (isLoaded) {
-                if (adResponse != null){
+                if (adResponse != null) {
                     switch (adResponse.getAdType()) {
                         case Constants.DEFAULT: {
+                            if (interstitialAdListener != null){
+                                defaultAd = new InterstitialAdDefault();
+                                defaultAd.setListener(AdFendoInterstitialAd.this);
+                            }
                             interstitialModel = adResponse.getInterstitial();
                             Intent intent = new Intent(ctx, InterstitialAdDefault.class);
                             intent.putExtra(Constants.AD_UNIT_IT, unitId);
@@ -88,7 +107,10 @@ public class AdFendoInterstitialAd {
                             break;
                         }
                         case Constants.CUSTOM: {
-                            //todo custom ad interstitial
+                            if (interstitialAdListener != null) {
+                                custom = new CustomInterstitialActivity();
+                                custom.setListener(AdFendoInterstitialAd.this);
+                            }
                             customInterstitialModel = adResponse.getCustomInterstitialAd();
                             Intent intent = new Intent(ctx, CustomInterstitialActivity.class);
                             intent.putExtra(Constants.AD_UNIT_IT, unitId);
@@ -100,6 +122,10 @@ public class AdFendoInterstitialAd {
                         }
                         case Constants.WEB: {
                             //todo web ad interstitial
+                            if (interstitialAdListener != null) {
+                                webInterstitial = new WebInterstitial();
+                                webInterstitial.setListener(AdFendoInterstitialAd.this);
+                            }
                             webInterstitialModel = adResponse.getWebInterstitialModel();
                             Intent intent = new Intent(ctx, WebInterstitial.class);
                             intent.putExtra(Constants.AD_UNIT_IT, unitId);
@@ -111,12 +137,16 @@ public class AdFendoInterstitialAd {
                         }
                     }
                     new ImpressionInBackground().execute();
-                }else{
-                    interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
+                } else {
+                    if (interstitialAdListener != null) {
+                        interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
+                    }
                 }
             }
         } else {
-            interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
+            if (interstitialAdListener != null) {
+                interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
+            }
         }
     }
 
@@ -141,6 +171,29 @@ public class AdFendoInterstitialAd {
         }
         return false;
     }
+
+
+    @Override
+    public void onCloseListener() {
+        if (interstitialAdListener != null){
+            interstitialAdListener.onClosed();
+        }
+    }
+
+    @Override
+    public void onCustomAdClosed() {
+        if (interstitialAdListener != null){
+            interstitialAdListener.onClosed();
+        }
+    }
+
+    @Override
+    public void onWebAdClosed() {
+        if (interstitialAdListener != null){
+            interstitialAdListener.onClosed();
+        }
+    }
+
     @SuppressLint("StaticFieldLeak")
     private class LocationInBackground extends AsyncTask<Void, Void, Void> {
         @Override
@@ -153,14 +206,15 @@ public class AdFendoInterstitialAd {
                     IpLocatoin ipLocatoin = response.body();
                     if (ipLocatoin != null) {
                         if (!ipLocatoin.getCountryLong().isEmpty()) {
-                            location = ipLocatoin.getRegion()+","+ipLocatoin.getCountryLong();
+                            location = ipLocatoin.getRegion() + "," + ipLocatoin.getCountryLong();
                         }
                         requestForAd();
                     }
                 }
+
                 @Override
                 public void onFailure(Call<IpLocatoin> call, Throwable t) {
-                    Log.d(TAG, "onFailure: "+t.getMessage());
+                    Log.d(TAG, "onFailure: " + t.getMessage());
                 }
             });
             return null;
@@ -168,75 +222,78 @@ public class AdFendoInterstitialAd {
     }
 
     private void requestForAd() {
+
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         String agent = Utils.getAgentInfo();
         String deviceId = "";
         try {
             deviceId = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
-        }catch (Exception e){
-            Log.d(TAG, "requestForAd: "+e.getMessage());
+        } catch (Exception e) {
+            Log.d(TAG, "requestForAd: " + e.getMessage());
         }
-        Call<AdResponse> call = apiInterface.requestAd(unitId, AppID.getAppId(), Utils.location, key.getApiKey(),agent,deviceId);
+        Call<AdResponse> call = apiInterface.requestAd(unitId, AppID.getAppId(), Utils.location, key.getApiKey(), agent, deviceId);
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
+
                 adResponse = response.body();
-                switch (adResponse.getCode()) {
-                    case ErrorCode.AD_NOT_AVAILABLE:
-                        interstitialAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
-                        setIsLoaded(false);
-                        break;
-                    case ErrorCode.INVALID_API:
-                        interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_API);
-                        setIsLoaded(false);
-                        break;
-                        case ErrorCode.PUBLISHER_NOT_ACTIVE:
-                        interstitialAdListener.onFailedToLoad(ErrorCode.PUBLISHER_NOT_ACTIVE);
-                        setIsLoaded(false);
-                        break;
-                    case ErrorCode.INVALID_AD_UNIT_ID:
-                        interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_AD_UNIT_ID);
-                        setIsLoaded(false);
-                        break;
-                    case ErrorCode.APP_ID_NOT_ACTIVE:
-                        interstitialAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_ACTIVE);
-                        break;
-                    case ErrorCode.APP_NOT_ACTIVE:
-                        interstitialAdListener.onFailedToLoad(ErrorCode.APP_NOT_ACTIVE);
-                        break;
-                    case ErrorCode.VALID_RESPONSE:
+                if (adResponse != null) {
+                    if (adResponse.getCode() == ErrorCode.VALID_RESPONSE) {
+                        setIsLoaded(true);
+                        if (interstitialAdListener != null) {
+                            interstitialAdListener.isLoaded(isLoaded());
+                        }
                         switch (adResponse.getAdType()) {
                             case Constants.DEFAULT:
-                                setIsLoaded(true);
-                                interstitialAdListener.isLoaded(isLoaded());
                                 interstitialModel = adResponse.getInterstitial();
                                 adId = interstitialModel.getAdId();
                                 eventId = interstitialModel.getAdEventId();
                                 break;
                             case Constants.CUSTOM:
-                                setIsLoaded(true);
-                                interstitialAdListener.isLoaded(isLoaded());
                                 customInterstitialModel = adResponse.getCustomInterstitialAd();
                                 adId = customInterstitialModel.getAdId();
                                 eventId = customInterstitialModel.getAdEventId();
                                 break;
                             case Constants.WEB:
-                                setIsLoaded(true);
-                                interstitialAdListener.isLoaded(isLoaded());
                                 webInterstitialModel = adResponse.getWebInterstitialModel();
                                 adId = webInterstitialModel.getAdId();
                                 eventId = webInterstitialModel.getAdEventId();
                                 break;
                         }
-                        break;
+                    } else {
+                        if (interstitialAdListener != null) {
+                            setErrorCodeListener(adResponse.getCode());
+                        }
+                        setIsLoaded(false);
+                    }
                 }
             }
+
             @Override
             public void onFailure(Call<AdResponse> call, Throwable t) {
-                interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
+                if (interstitialAdListener != null) {
+                    interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
+                }
             }
         });
     }
+
+    private void setErrorCodeListener(int code) {
+        if (code == ErrorCode.AD_NOT_AVAILABLE) {
+            interstitialAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
+        } else if (code == ErrorCode.INVALID_API) {
+            interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_API);
+        } else if (code == ErrorCode.PUBLISHER_NOT_ACTIVE) {
+            interstitialAdListener.onFailedToLoad(ErrorCode.PUBLISHER_NOT_ACTIVE);
+        } else if (code == ErrorCode.INVALID_AD_UNIT_ID) {
+            interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_AD_UNIT_ID);
+        } else if (code == ErrorCode.APP_ID_NOT_ACTIVE) {
+            interstitialAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_ACTIVE);
+        } else if (code == ErrorCode.APP_NOT_ACTIVE) {
+            interstitialAdListener.onFailedToLoad(ErrorCode.APP_NOT_ACTIVE);
+        }
+    }
+
     @SuppressLint("StaticFieldLeak")
     private class ImpressionInBackground extends AsyncTask<Void, Void, Void> {
         @Override
@@ -255,7 +312,9 @@ public class AdFendoInterstitialAd {
                 @Override
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                     impressionMillisecond = SystemClock.elapsedRealtime();
-                    interstitialAdListener.onImpression();
+                    if (interstitialAdListener != null) {
+                        interstitialAdListener.onImpression();
+                    }
                 }
 
                 @Override

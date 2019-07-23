@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,6 +23,7 @@ import com.adfendo.beta.model.WebInterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
+import com.adfendo.beta.utilities.ErrorCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
@@ -40,6 +40,16 @@ public class WebInterstitial extends AppCompatActivity {
     private Button cancelButton;
     private boolean isLoaded;
     private long clickedTime;
+
+    long differenceBetweenImpAndClick;
+    WebAdCloseListener webAdCloseListener;
+    public interface WebAdCloseListener {
+        void onWebAdClosed();
+    }
+
+    public void setListener(WebAdCloseListener webAdCloseListener){
+        this.webAdCloseListener = webAdCloseListener;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,19 +72,18 @@ public class WebInterstitial extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 clickedTime = SystemClock.elapsedRealtime();
-                long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime)/1000;
-//                Toast.makeText(WebInterstitial.this, "Difference :"+differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
+                differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime)/1000;
                 saveDataToServer(true, webInterstitialModel.getAdId());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInterstitialModel.getWebUrl()));
                 startActivity(browserIntent);
-                AdFendoInterstitialAd.interstitialAdListener.onImpression();
-
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AdFendoInterstitialAd.interstitialAdListener.onClosed();
+                if (webAdCloseListener != null){
+                    webAdCloseListener.onWebAdClosed();
+                }
                 finish();
             }
         });
@@ -86,26 +95,28 @@ public class WebInterstitial extends AppCompatActivity {
                 adUnitId,
                 AppID.getAppId(),
                 key.getApiKey(),
-                webInterstitialModel.getAdEventId(), Utils.getAgentInfo(),AdFendo.getAndroidId(),clickedTime
+                webInterstitialModel.getAdEventId(), Utils.getAgentInfo(),AdFendo.getAndroidId(),differenceBetweenImpAndClick
                 );
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 AdResponse adResponse = response.body();
                 if (isClicked) {
-                    if (adResponse.getClick().equals("ok")) {
-                        AdFendoInterstitialAd.interstitialAdListener.onClosed();
-                        isLoaded = false;
-                        AdFendoInterstitialAd.interstitialAdListener.isLoaded(isLoaded);
+                    if (adResponse.getCode() == ErrorCode.VALID_RESPONSE) {
                     }
-                    AdFendoInterstitialAd.interstitialAdListener.onClosed();
+                    if (webAdCloseListener != null){
+                        webAdCloseListener.onWebAdClosed();
+                    }
                     finish();
                 }
             }
             @Override
             public void onFailure(Call<AdResponse> call, Throwable t) {
                 Log.d(AdFendo.class.getSimpleName(), "" + t.getMessage());
-                AdFendoInterstitialAd.interstitialAdListener.onClosed();
+                if (webAdCloseListener != null){
+                    webAdCloseListener.onWebAdClosed();
+                }
+
                 finish();
             }
         });
@@ -113,6 +124,17 @@ public class WebInterstitial extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        AdFendoInterstitialAd.interstitialAdListener.onClosed();
+        if (webAdCloseListener != null){
+            webAdCloseListener.onWebAdClosed();
+        }
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (webAdCloseListener != null){
+            webAdCloseListener = null;
+        }
     }
 }

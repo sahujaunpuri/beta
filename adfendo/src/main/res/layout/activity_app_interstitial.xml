@@ -91,44 +91,70 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/custom_image_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="@color/cycen">
 
         <ImageView
             android:id="@+id/full_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"/>
+            android:layout_weight="1"/>
         <TextView
             android:id="@+id/text_view_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/install_button"
-            android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
             android:ellipsize="end"
+            android:layout_marginTop="16dp"
             android:inputType="text"
             android:textStyle="bold"
             android:textAppearance="?android:textAppearanceLarge"
             android:maxLines="1"
             android:padding="5dp"
             android:singleLine="true"
+            android:layout_gravity="center_horizontal"
             android:text="Make friends and love"
             android:textColor="@android:color/white" />
         <Button
             android:id="@+id/install_button"
             android:layout_width="220dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
+            android:layout_gravity="center_horizontal"
             android:background="@drawable/custom_app_install_button"
             android:padding="10dp"
+            android:textColor="#FFFFFF"
             android:textStyle="bold" />
-    </RelativeLayout>
+        <LinearLayout android:id="@+id/info_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="end">
+            <ImageView
+                android:id="@+id/infoButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="4dp"
+                android:src="@drawable/info" />
+            <TextView
+                android:id="@+id/info_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/infoButton"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="6dp"
+                android:layout_toRightOf="@+id/infoButton"
+                android:text="Ads By AdFendo"
+                android:textColor="@android:color/white"
+                android:visibility="visible" />
+        </LinearLayout>
+    </LinearLayout>
 
 
 </LinearLayout>

@@ -31,6 +31,7 @@ import com.adfendo.beta.model.InterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
+import com.adfendo.beta.utilities.ErrorCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
@@ -65,25 +66,14 @@ public class InterstitialAdDefault extends AppCompatActivity {
     private long mLastClickTime = 0;
     //your activity listener interface
     private static InterstitialAdCloseListener onClosedListener;
-
     public void setListener(InterstitialAdCloseListener listener) {
-        this.onClosedListener = listener;
+        onClosedListener = listener;
     }
-
     public interface InterstitialAdCloseListener {
         void onCloseListener();
     }
-
-
-    public void setInterstitialAdListener(InterstitialAdListener interstitialAdListener) {
-        this.listener = interstitialAdListener;
-        this.context = context;
-
-    }
-
     public InterstitialAdDefault() {
     }
-
     ImageView appLogo;
     TextView textViewAppName;
     TextView textViewRating, textViewOfferedBy, textViewTotalReview, descripotionOne;
@@ -259,8 +249,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
         outState.putInt("color", randomAndroidColor);
         onSaveInstanceState(outState);
     }
-
-
+    
     private void saveDataToServer(final boolean isClicked, final int adID) {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Key key = new Key();
@@ -277,10 +266,13 @@ public class InterstitialAdDefault extends AppCompatActivity {
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 AdResponse adResponse = response.body();
                 if (isClicked) {
-                    if (adResponse.getCode() == 200) {
-                        Log.d(TAG, "onResponse: Impression ok");
+                    if (adResponse.getCode() == ErrorCode.VALID_RESPONSE) {
+                        Log.d(TAG, "onResponse: "+ ErrorCode.VALID_RESPONSE);
+                    }else if(adResponse.getCode() == ErrorCode.FRAUD_CLICK){
+                        Log.d(TAG, "onResponse: "+ErrorCode.FRAUD_CLICK);
+                    }else if (adResponse.getCode() == ErrorCode.CLICK_ERROR){
+                        Log.d(TAG, "onResponse: "+ErrorCode.CLICK_ERROR);
                     }
-
                 }
                 if (onClosedListener != null){
                     onClosedListener.onCloseListener();
@@ -332,5 +324,6 @@ public class InterstitialAdDefault extends AppCompatActivity {
         if (onClosedListener != null){
             onClosedListener = null;
         }
+        interstitialModel =null;
     }
 }

@@ -11,4 +11,8 @@ public class ErrorCode {
     public static final int APP_ID_NOT_ACTIVE = 111;
     public static final int APP_NOT_ACTIVE = 306;
     public static final int PUBLISHER_NOT_ACTIVE= 305;
+    public static final int AD_IMPRESSION_FRAUD = 202;
+    public static final int CLICK_ERROR = 802;
+    public static final int FRAUD_CLICK = 201;
+
 }

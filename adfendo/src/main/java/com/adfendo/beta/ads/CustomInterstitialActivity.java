@@ -1,18 +1,16 @@
 package com.adfendo.beta.ads;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +20,6 @@ import com.adfendo.beta.R;
 import com.adfendo.beta.adapter.SliderImageAdapter;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
-
-import com.adfendo.beta.interfaces.InterstitialAdListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.CustomInterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
@@ -51,7 +47,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     private TextView description;
     private Button actionButton;
     private Button cancelButton;
-    private RelativeLayout imageContainer;
+    private LinearLayout imageContainer;
 
     private Utils utils;
     private AdResponse adResponse;
@@ -61,14 +57,11 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     private ImageView fullImage;
     private long mLastClickTime = 0;
     long clickedTime;
+    private static CustomAdClosedListener onClosedListener;
 
-    private Context context;
-    private static InterstitialAdListener listener;
-
-    CustomAdClosedListener onClosedListener;
-
+    private static final String TAG = "CustomInterstitialActiv";
     public void setListener(CustomAdClosedListener listener) {
-        this.onClosedListener = listener;
+        onClosedListener = listener;
     }
     public interface CustomAdClosedListener{
         void onCustomAdClosed();
@@ -152,11 +145,18 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 AdResponse adResponse = response.body();
                 if (isClicked) {
-                    if (adResponse.getCode()== ErrorCode.VALID_RESPONSE) {
-                        if (onClosedListener != null){
-                            onClosedListener.onCustomAdClosed();
-                        }
+                   
+                    if (adResponse.getCode() == ErrorCode.VALID_RESPONSE) {
+                        Log.d(TAG, "onResponse: "+ ErrorCode.VALID_RESPONSE);
+                    }else if(adResponse.getCode() == ErrorCode.FRAUD_CLICK){
+                        Log.d(TAG, "onResponse: "+ErrorCode.FRAUD_CLICK);
+                    }else if (adResponse.getCode() == ErrorCode.CLICK_ERROR){
+                        Log.d(TAG, "onResponse: "+ErrorCode.CLICK_ERROR);
                     }
+                    if (onClosedListener != null){
+                        onClosedListener.onCustomAdClosed();
+                    }
+
                 }
             }
 
@@ -173,7 +173,6 @@ public class CustomInterstitialActivity extends AppCompatActivity {
         if (onClosedListener != null){
             onClosedListener.onCustomAdClosed();
         }
-        finish();
     }
 
     @Override

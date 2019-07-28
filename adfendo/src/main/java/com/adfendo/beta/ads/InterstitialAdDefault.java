@@ -1,6 +1,5 @@
 package com.adfendo.beta.ads;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -32,7 +31,7 @@ import com.adfendo.beta.model.InterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
-import com.adfendo.beta.utilities.ErrorCode;
+import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
@@ -249,12 +248,12 @@ public class InterstitialAdDefault extends AppCompatActivity {
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 AdResponse adResponse = response.body();
                 if (isClicked) {
-                    if (adResponse.getCode() == ErrorCode.VALID_RESPONSE) {
-                        Log.d(TAG, "onResponse: "+ ErrorCode.VALID_RESPONSE);
-                    }else if(adResponse.getCode() == ErrorCode.FRAUD_CLICK){
-                        Log.d(TAG, "onResponse: "+ErrorCode.FRAUD_CLICK);
-                    }else if (adResponse.getCode() == ErrorCode.CLICK_ERROR){
-                        Log.d(TAG, "onResponse: "+ErrorCode.CLICK_ERROR);
+                    if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
+                        Log.d(TAG, "onResponse: "+ ResponseCode.VALID_RESPONSE);
+                    }else if(adResponse.getCode() == ResponseCode.FRAUD_CLICK){
+                        Log.d(TAG, "onResponse: "+ ResponseCode.FRAUD_CLICK);
+                    }else if (adResponse.getCode() == ResponseCode.CLICK_ERROR){
+                        Log.d(TAG, "onResponse: "+ ResponseCode.CLICK_ERROR);
                     }
                 }
                 if (onClosedListener != null){

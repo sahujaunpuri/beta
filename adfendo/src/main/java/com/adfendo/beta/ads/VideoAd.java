@@ -35,7 +35,7 @@ import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.Video;
 import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
-import com.adfendo.beta.utilities.ErrorCode;
+import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
@@ -254,7 +254,7 @@ public class VideoAd extends AppCompatActivity {
             isIsImpressionSuccessfull = "1";
             descripotionOne.setText(video.getIntAdDescription());
         } else {
-            videoAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
+            videoAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
         }
         impressionCall();
     }
@@ -264,7 +264,7 @@ public class VideoAd extends AppCompatActivity {
             Intent intent = new Intent(this.context, VideoAd.class);
             this.context.startActivity(intent);
         } else {
-            videoAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
+            videoAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
         }
     }
     public void requestAd() {
@@ -287,7 +287,7 @@ public class VideoAd extends AppCompatActivity {
                             adResponse = response.body();
                             if (adResponse != null) {
                                 switch (adResponse.getCode()) {
-                                    case ErrorCode.VALID_RESPONSE:
+                                    case ResponseCode.VALID_RESPONSE:
                                         video = adResponse.getVideoAd();
                                         if (video != null) {
                                             listOfImages = new ArrayList<>();
@@ -301,25 +301,25 @@ public class VideoAd extends AppCompatActivity {
                                             videoAdListener.isLoaded(isLoaded());
                                         }
                                         break;
-                                    case ErrorCode.AD_NOT_AVAILABLE:
-                                        videoAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
+                                    case ResponseCode.AD_NOT_AVAILABLE:
+                                        videoAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
                                         break;
-                                    case ErrorCode.INVALID_AD_UNIT_ID:
-                                        videoAdListener.onFailedToLoad(ErrorCode.INVALID_AD_UNIT_ID);
+                                    case ResponseCode.INVALID_AD_UNIT_ID:
+                                        videoAdListener.onFailedToLoad(ResponseCode.INVALID_AD_UNIT_ID);
                                         break;
-                                    case ErrorCode.INVALID_API:
-                                        videoAdListener.onFailedToLoad(ErrorCode.INVALID_API);
+                                    case ResponseCode.INVALID_API:
+                                        videoAdListener.onFailedToLoad(ResponseCode.INVALID_API);
                                         break;
-                                    case ErrorCode.APP_ID_NOT_ACTIVE:
-                                        videoAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_ACTIVE);
+                                    case ResponseCode.APP_ID_NOT_ACTIVE:
+                                        videoAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_ACTIVE);
                                         break;
-                                    case ErrorCode.APP_NOT_ACTIVE:
-                                        videoAdListener.onFailedToLoad(ErrorCode.APP_NOT_ACTIVE);
+                                    case ResponseCode.APP_NOT_ACTIVE:
+                                        videoAdListener.onFailedToLoad(ResponseCode.APP_NOT_ACTIVE);
                                         break;
                                 }
 
                             } else {
-                                videoAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
+                                videoAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
                             }
                         }
                         @Override

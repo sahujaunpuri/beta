@@ -26,7 +26,7 @@ import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.Banner;
 import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
-import com.adfendo.beta.utilities.ErrorCode;
+import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
@@ -237,7 +237,7 @@ public class BannerAd extends LinearLayout {
                     if (response.body() != null) {
                         adResponse = response.body();
                         switch (adResponse.getCode()) {
-                            case ErrorCode.VALID_RESPONSE:
+                            case ResponseCode.VALID_RESPONSE:
                                 bannerAd = response.body().getBannerAd();
                                 if (bannerAd != null) {
                                     bannerAdListener.onRequest(true);
@@ -254,20 +254,20 @@ public class BannerAd extends LinearLayout {
                                     new ImpressionInBaground().execute();
                                 }
                                 break;
-                            case ErrorCode.AD_NOT_AVAILABLE:
-                                bannerAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
+                            case ResponseCode.AD_NOT_AVAILABLE:
+                                bannerAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
                                 break;
-                            case ErrorCode.APP_ID_NOT_INITIALIZED:
-                                bannerAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_INITIALIZED);
+                            case ResponseCode.APP_ID_NOT_INITIALIZED:
+                                bannerAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_INITIALIZED);
                                 break;
-                            case ErrorCode.INVALID_API:
-                                bannerAdListener.onFailedToLoad(ErrorCode.INVALID_API);
+                            case ResponseCode.INVALID_API:
+                                bannerAdListener.onFailedToLoad(ResponseCode.INVALID_API);
                                 break;
-                            case ErrorCode.APP_ID_NOT_ACTIVE:
-                                bannerAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_ACTIVE);
+                            case ResponseCode.APP_ID_NOT_ACTIVE:
+                                bannerAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_ACTIVE);
                                 break;
-                            case ErrorCode.APP_NOT_ACTIVE:
-                                bannerAdListener.onFailedToLoad(ErrorCode.APP_NOT_ACTIVE);
+                            case ResponseCode.APP_NOT_ACTIVE:
+                                bannerAdListener.onFailedToLoad(ResponseCode.APP_NOT_ACTIVE);
                                 break;
                         }
                     }

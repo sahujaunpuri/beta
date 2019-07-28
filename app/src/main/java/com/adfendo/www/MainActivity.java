@@ -18,7 +18,7 @@ public class    MainActivity extends AppCompatActivity {
     private static final String TAG = "Debug";
 
     Button interstetialButton;
-    Button videoButton;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,48 +26,11 @@ public class    MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         interstetialButton = findViewById(R.id.interstetial);
 
-        AdFendo.initialize(this, "pub-app-704441634");
-        videoButton = findViewById(R.id.video_ad);
+        AdFendo.initialize(this, "pub-app-314377906");
 
-//        videoAd = new VideoAd(this, "pub-ad-unit-id-704441634~152658631");
-//        videoAd.setVideoAdListener(new VideoAdListener() {
-//            @Override
-//            public void onTimeCount(int milliSecond) {
-//
-//            }
-//
-//            @Override
-//            public void onClosed() {
-//                videoAd.requestAd();
-//                Toast.makeText(MainActivity.this, "onClosed Clicked", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onFailedToLoad(int errorMessage) {
-////                Toast.makeText(MainActivity.this, "onFailed :"+errorMessage, Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void isLoaded(boolean isLoaded) {
-////                Toast.makeText(MainActivity.this, "onLoad :"+isLoaded, Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onImpression() {
-////                Toast.makeText(MainActivity.this, "onImpression ", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        videoButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (videoAd.isLoaded()) {
-//                    videoAd.showVideoAd();
-//                }
-//            }
-//        });
 
-        adFendoInterstitialAd = new AdFendoInterstitialAd(this, "pub-ad-unit-id-704441634~910330028");
+
+        adFendoInterstitialAd = new AdFendoInterstitialAd(this, "pub-ad-unit-id-314377906~919981366");
         adFendoInterstitialAd.requestAd();
 
         adFendoInterstitialAd.setInterstitialAdListener(new InterstitialAdListener() {
@@ -91,51 +54,12 @@ public class    MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "onImpression called", Toast.LENGTH_SHORT).show();
             }
         });
-//
-        interstetialButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (adFendoInterstitialAd.isLoaded()) {
-                    adFendoInterstitialAd.showAd();
-                } else {
-                    Toast.makeText(MainActivity.this, "something went error", Toast.LENGTH_SHORT).show();
-                }
+        interstetialButton.setOnClickListener(v -> {
+            if (adFendoInterstitialAd.isLoaded()) {
+                adFendoInterstitialAd.showAd();
+            } else {
+                Toast.makeText(MainActivity.this, "something went error", Toast.LENGTH_SHORT).show();
             }
         });
-//        BannerAd bannerAd = new BannerAd(this, "pub-ad-unit-id-704441634~759229480");
-//        bannerAd.setOnBannerAdListener(new BannerAdListener() {
-//            @Override
-//            public void onClosed() {
-//
-//            }
-//
-//            @Override
-//            public void isLoaded(boolean isLoaded) {
-//
-//            }
-//
-//            @Override
-//            public void onImpression() {
-//
-//            }
-//
-//            @Override
-//            public void onRequest(boolean isSuccessful) {
-//            }
-//
-//            @Override
-//            public void onFailedToLoad(int errorMessage) {
-//            }
-//        });
-
-        int n = 10;
-        for (int i = 0;i<n;i++){
-
-            if(i==3){
-                n = 20;
-            }
-            System.out.println(i);
-        }
-
     }
 }

@@ -19,7 +19,7 @@ import com.adfendo.beta.model.WebInterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
-import com.adfendo.beta.utilities.ErrorCode;
+import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 
@@ -72,17 +72,17 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                     }
                 } else {
                     if (interstitialAdListener != null) {
-                        interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
+                        interstitialAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
                     }
                 }
             } else {
                 if (interstitialAdListener != null) {
-                    interstitialAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_INITIALIZED);
+                    interstitialAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_INITIALIZED);
                 }
             }
         } else {
             if (interstitialAdListener != null) {
-                interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_AD_UNIT_ID);
+                interstitialAdListener.onFailedToLoad(ResponseCode.INVALID_AD_UNIT_ID);
             }
         }
     }
@@ -139,13 +139,13 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                     new ImpressionInBackground().execute();
                 } else {
                     if (interstitialAdListener != null) {
-                        interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
+                        interstitialAdListener.onFailedToLoad(ResponseCode.SOMETHING_WENT_WRONG);
                     }
                 }
             }
         } else {
             if (interstitialAdListener != null) {
-                interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
+                interstitialAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
             }
         }
     }
@@ -197,7 +197,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
 
     @Override
     public void onNetworkFailedListener() {
-        interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
+        interstitialAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -244,7 +244,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 adResponse = response.body();
                 if (adResponse != null) {
-                    if (adResponse.getCode() == ErrorCode.VALID_RESPONSE) {
+                    if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
                         setIsLoaded(true);
                         if (interstitialAdListener != null) {
                             interstitialAdListener.isLoaded(isLoaded());
@@ -277,25 +277,25 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
             @Override
             public void onFailure(Call<AdResponse> call, Throwable t) {
                 if (interstitialAdListener != null) {
-                    interstitialAdListener.onFailedToLoad(ErrorCode.SOMETHING_WENT_WRONG);
+                    interstitialAdListener.onFailedToLoad(ResponseCode.SOMETHING_WENT_WRONG);
                 }
             }
         });
     }
 
     private void setErrorCodeListener(int code) {
-        if (code == ErrorCode.AD_NOT_AVAILABLE) {
-            interstitialAdListener.onFailedToLoad(ErrorCode.AD_NOT_AVAILABLE);
-        } else if (code == ErrorCode.INVALID_API) {
-            interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_API);
-        } else if (code == ErrorCode.PUBLISHER_NOT_ACTIVE) {
-            interstitialAdListener.onFailedToLoad(ErrorCode.PUBLISHER_NOT_ACTIVE);
-        } else if (code == ErrorCode.INVALID_AD_UNIT_ID) {
-            interstitialAdListener.onFailedToLoad(ErrorCode.INVALID_AD_UNIT_ID);
-        } else if (code == ErrorCode.APP_ID_NOT_ACTIVE) {
-            interstitialAdListener.onFailedToLoad(ErrorCode.APP_ID_NOT_ACTIVE);
-        } else if (code == ErrorCode.APP_NOT_ACTIVE) {
-            interstitialAdListener.onFailedToLoad(ErrorCode.APP_NOT_ACTIVE);
+        if (code == ResponseCode.AD_NOT_AVAILABLE) {
+            interstitialAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
+        } else if (code == ResponseCode.INVALID_API) {
+            interstitialAdListener.onFailedToLoad(ResponseCode.INVALID_API);
+        } else if (code == ResponseCode.PUBLISHER_NOT_ACTIVE) {
+            interstitialAdListener.onFailedToLoad(ResponseCode.PUBLISHER_NOT_ACTIVE);
+        } else if (code == ResponseCode.INVALID_AD_UNIT_ID) {
+            interstitialAdListener.onFailedToLoad(ResponseCode.INVALID_AD_UNIT_ID);
+        } else if (code == ResponseCode.APP_ID_NOT_ACTIVE) {
+            interstitialAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_ACTIVE);
+        } else if (code == ResponseCode.APP_NOT_ACTIVE) {
+            interstitialAdListener.onFailedToLoad(ResponseCode.APP_NOT_ACTIVE);
         }
     }
 

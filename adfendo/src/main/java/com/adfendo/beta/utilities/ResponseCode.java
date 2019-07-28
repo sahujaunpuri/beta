@@ -1,6 +1,6 @@
 package com.adfendo.beta.utilities;
 
-public class ErrorCode {
+public class ResponseCode {
     public static final int AD_NOT_AVAILABLE = 404;
     public static final int INVALID_API = 301;
     public static final int INVALID_AD_UNIT_ID = 302;

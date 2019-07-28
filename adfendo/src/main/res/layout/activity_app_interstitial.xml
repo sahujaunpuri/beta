@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.adfendo.beta.ads.CustomInterstitialActivity">
+    tools:context=".ads.CustomInterstitialActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
@@ -16,7 +15,6 @@
             android:id="@+id/cancelButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_alignParentRight="true"
             android:layout_margin="8dp"
             android:layout_gravity="center"
             android:background="@drawable/close" />
@@ -25,15 +23,12 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:background="@drawable/logo_image_bg"
-            android:src="@drawable/palup_logo" />
-
+            android:scaleType="fitXY"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:orientation="vertical"
-            >
-
+            android:orientation="vertical">
             <TextView
                 android:id="@+id/app_name_text_view"
                 android:layout_width="wrap_content"
@@ -42,10 +37,8 @@
                 android:inputType="text"
                 android:padding="5dp"
                 android:singleLine="true"
-                android:text="Palup - Dating, Chatting app"
                 android:textColor="@android:color/white"
                 android:textSize="16sp" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,7 +72,8 @@
                     android:padding="5dp"
                     android:singleLine="true"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    tools:ignore="TextViewEdits" />
 
                 <TextView
                     android:id="@+id/text_view_free_or_paid"
@@ -94,16 +88,15 @@
     <LinearLayout
         android:id="@+id/custom_image_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/cycen">
-
+        android:background="@color/black">
         <ImageView
             android:id="@+id/full_image"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scaleType="fitXY"/>
         <TextView
             android:id="@+id/text_view_description"
             android:layout_width="wrap_content"
@@ -118,7 +111,6 @@
             android:padding="5dp"
             android:singleLine="true"
             android:layout_gravity="center_horizontal"
-            android:text="Make friends and love"
             android:textColor="@android:color/white" />
         <Button
             android:id="@+id/install_button"
@@ -139,18 +131,15 @@
                 android:id="@+id/infoButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_alignParentBottom="true"
                 android:layout_margin="4dp"
                 android:src="@drawable/info" />
             <TextView
                 android:id="@+id/info_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/infoButton"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="6dp"
-                android:layout_toRightOf="@+id/infoButton"
-                android:text="Ads By AdFendo"
+                android:layout_marginEnd="6dp"
+                android:text="@string/ads_by_fendomob"
                 android:textColor="@android:color/white"
                 android:visibility="visible" />
         </LinearLayout>

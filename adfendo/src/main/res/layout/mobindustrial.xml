@@ -24,9 +24,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_margin="4dp"
             android:background="@android:color/white">
-            <android.support.v4.view.ViewPager
+            <androidx.viewpager.widget.ViewPager
                 android:id="@+id/view_pager"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
@@ -46,7 +45,7 @@
                     android:id="@+id/app_logo"
                     android:layout_width="88dp"
                     android:layout_height="88dp"
-                    android:src="@drawable/palup_logo"/>
+                    />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -57,7 +56,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="5dp"
-                        android:text="Palup - Dating, Chatting app"
+
                         android:textColor="@android:color/white"
                         android:textSize="16sp" />
                     <LinearLayout
@@ -87,7 +86,6 @@
                             android:padding="5dp"
                             android:textColor="@android:color/white"
                             android:textSize="18sp" />
-
                         <TextView
                             android:id="@+id/text_view_free_or_paid"
                             android:layout_width="wrap_content"
@@ -95,9 +93,7 @@
                             android:padding="5dp"
                             android:textColor="@android:color/white"
                             android:textSize="18sp" />
-
                     </LinearLayout>
-
                 </LinearLayout>
             </LinearLayout>
             <TextView
@@ -106,7 +102,7 @@
                 android:layout_gravity="center_horizontal"
                 android:padding="5dp"
                 android:textColor="@android:color/white"
-                android:text="Chat with anyone "/>
+            />
             <TextView
                 android:id="@+id/text_view_offered_by"
                 android:layout_width="wrap_content"
@@ -114,7 +110,7 @@
                 android:layout_gravity="center_horizontal"
                 android:padding="5dp"
                 android:textColor="@android:color/white"
-                android:text="Make friends and love"/>
+             />
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

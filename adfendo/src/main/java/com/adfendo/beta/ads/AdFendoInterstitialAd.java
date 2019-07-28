@@ -180,6 +180,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
         }
     }
 
+
     @Override
     public void onCustomAdClosed() {
         if (interstitialAdListener != null){
@@ -192,6 +193,11 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
         if (interstitialAdListener != null){
             interstitialAdListener.onClosed();
         }
+    }
+
+    @Override
+    public void onNetworkFailedListener() {
+        interstitialAdListener.onFailedToLoad(ErrorCode.ERROR_IN_NETWORK_CONNECTION);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -221,6 +227,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
         }
     }
 
+    @SuppressLint("HardwareIds")
     private void requestForAd() {
 
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -235,7 +242,6 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
-
                 adResponse = response.body();
                 if (adResponse != null) {
                     if (adResponse.getCode() == ErrorCode.VALID_RESPONSE) {
@@ -268,7 +274,6 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                     }
                 }
             }
-
             @Override
             public void onFailure(Call<AdResponse> call, Throwable t) {
                 if (interstitialAdListener != null) {

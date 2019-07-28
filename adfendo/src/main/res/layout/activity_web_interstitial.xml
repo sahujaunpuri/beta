@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.adfendo.beta.ads.WebInterstitial">
+    tools:context="com.adfendo.beta.ads.WebInterstitial"
+    >
 
     <Button
         android:id="@+id/cancelButton"
@@ -16,6 +17,7 @@
     <ImageView
         android:id="@+id/image_view_web"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"/>
 
 </RelativeLayout>

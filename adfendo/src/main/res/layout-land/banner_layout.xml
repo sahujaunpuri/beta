@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:orientation="horizontal">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,10 +74,10 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:background="@drawable/button_background"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:layout_gravity="center_vertical"
             android:text="Install"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             />
     </LinearLayout>
 </LinearLayout>

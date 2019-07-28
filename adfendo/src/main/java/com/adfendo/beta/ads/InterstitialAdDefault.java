@@ -26,6 +26,7 @@ import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
 
 import com.adfendo.beta.interfaces.InterstitialAdListener;
+import com.adfendo.beta.interfaces.NetworkListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.InterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
@@ -52,24 +53,18 @@ import retrofit2.Response;
 public class InterstitialAdDefault extends AppCompatActivity {
     private static final String TAG = "InterstitialModel";
     InterstitialAdListener interstitialAdListener;
-    private static String addUnitId;
     ApiInterface apiInterface;
-    private static boolean isLoaded = false;
     private String isIsImpressionSuccessfull = "";
-    private boolean isClicked;
     private static InterstitialModel interstitialModel;
     private static List<String> listOfImages;
     ViewPager viewPager;
-    private Context context;
-    private boolean isNetworkAvailable = false;
-    InterstitialAdListener listener;
     private long mLastClickTime = 0;
     //your activity listener interface
     private static InterstitialAdCloseListener onClosedListener;
     public void setListener(InterstitialAdCloseListener listener) {
         onClosedListener = listener;
     }
-    public interface InterstitialAdCloseListener {
+    public interface InterstitialAdCloseListener extends NetworkListener {
         void onCloseListener();
     }
     public InterstitialAdDefault() {
@@ -98,9 +93,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
     String adUnitId = "";
     long clickedTime;
     long differenceBetweenImpAndClick;
-//    public void setListener(InterstitialAdListener interstitialAdListener) {
-//        InterstitialAdDefault.interstitialAdListener = interstitialAdListener;
-//    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -142,28 +135,33 @@ public class InterstitialAdDefault extends AppCompatActivity {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickedTime = SystemClock.elapsedRealtime();
-                differenceBetweenImpAndClick = Math.abs(clickedTime - AdFendoInterstitialAd.impressionMillisecond) / 1000;
-                Toast.makeText(InterstitialAdDefault.this, "Difference :" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
-                if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
-                    return;
-                }
-                mLastClickTime = SystemClock.elapsedRealtime();
-                saveDataToServer(true, interstitialModel.getAdId());
-                String[] appPackageName = interstitialModel.getAppUrl().split("=");
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("market://details?id=" + appPackageName[1])));
-                } catch (android.content.ActivityNotFoundException anfe) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(interstitialModel.getAppUrl())));
-                }
+                if(checkConnection()){
+                    clickedTime = SystemClock.elapsedRealtime();
+                    differenceBetweenImpAndClick = Math.abs(clickedTime - AdFendoInterstitialAd.impressionMillisecond) / 1000;
+                    Toast.makeText(InterstitialAdDefault.this, "Difference :" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
+                    if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
+                        return;
+                    }
+                    mLastClickTime = SystemClock.elapsedRealtime();
+                    saveDataToServer(true, interstitialModel.getAdId());
+                    String[] appPackageName = interstitialModel.getAppUrl().split("=");
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=" + appPackageName[1])));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(interstitialModel.getAppUrl())));
+                    }
+                }else{
+                    if (onClosedListener!= null){
+                        onClosedListener.onNetworkFailedListener();
+                    }
 
+                }
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                AdFendoInterstitialAd.interstitialAdListener.onClosed();
                 if (onClosedListener != null){
                     onClosedListener.onCloseListener();
                 }
@@ -206,21 +204,6 @@ public class InterstitialAdDefault extends AppCompatActivity {
         return false;
     }
 
-    public boolean isClicked() {
-        return isClicked;
-    }
-
-    public void setClicked(boolean clicked) {
-        isClicked = clicked;
-    }
-
-    public boolean isLoaded() {
-        return isLoaded;
-    }
-
-    public void setIsLoaded(boolean isLoaded) {
-        this.isLoaded = isLoaded;
-    }
 
     private void display() {
         color = randomAndroidColor;
@@ -249,7 +232,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
         outState.putInt("color", randomAndroidColor);
         onSaveInstanceState(outState);
     }
-    
+
     private void saveDataToServer(final boolean isClicked, final int adID) {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Key key = new Key();

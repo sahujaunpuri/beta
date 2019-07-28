@@ -20,6 +20,7 @@ import com.adfendo.beta.R;
 import com.adfendo.beta.adapter.SliderImageAdapter;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
+import com.adfendo.beta.interfaces.NetworkListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.CustomInterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
@@ -63,7 +64,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     public void setListener(CustomAdClosedListener listener) {
         onClosedListener = listener;
     }
-    public interface CustomAdClosedListener{
+    public interface CustomAdClosedListener extends NetworkListener  {
         void onCustomAdClosed();
     }
 

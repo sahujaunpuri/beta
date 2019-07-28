@@ -19,6 +19,7 @@ import com.adfendo.beta.R;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
 
+import com.adfendo.beta.interfaces.NetworkListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.WebInterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
@@ -44,7 +45,7 @@ public class WebInterstitial extends AppCompatActivity {
     private static final String TAG = "WebInterstitial";
     long differenceBetweenImpAndClick;
     private static WebAdCloseListener webAdCloseListener;
-    public interface WebAdCloseListener {
+    public interface WebAdCloseListener extends NetworkListener {
         void onWebAdClosed();
     }
 

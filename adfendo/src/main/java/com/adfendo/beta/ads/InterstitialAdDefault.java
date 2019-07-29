@@ -23,7 +23,6 @@ import com.adfendo.beta.R;
 import com.adfendo.beta.adapter.SliderImageAdapter;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
-
 import com.adfendo.beta.interfaces.InterstitialAdListener;
 import com.adfendo.beta.interfaces.NetworkListener;
 import com.adfendo.beta.model.AdResponse;
@@ -31,11 +30,10 @@ import com.adfendo.beta.model.InterstitialModel;
 import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
-import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
+import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
-
 
 import java.io.IOException;
 import java.util.ArrayList;

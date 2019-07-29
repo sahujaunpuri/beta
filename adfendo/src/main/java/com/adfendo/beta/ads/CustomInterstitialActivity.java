@@ -97,7 +97,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 clickedTime = SystemClock.elapsedRealtime();
-                long differenceBetweenImpAndClick = (AdFendoInterstitialAd.impressionMillisecond - clickedTime) / 1000;
+                long differenceBetweenImpAndClick = Math.abs(clickedTime -AdFendoInterstitialAd.impressionMillisecond ) / 1000;
                 Toast.makeText(CustomInterstitialActivity.this, "Difference :" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;

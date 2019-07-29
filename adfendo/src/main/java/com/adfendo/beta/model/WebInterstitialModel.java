@@ -42,6 +42,13 @@ public class WebInterstitialModel implements Parcelable {
     @SerializedName("ad_event_id")
     @Expose
     private int adEventId;
+    @SerializedName("web_button_text")
+    @Expose
+    private String webButtonText;
+
+    @SerializedName("int_ad_description")
+    @Expose
+    private String webAdDescription;
 
     public int getAdId() {
         return adId;
@@ -131,6 +138,22 @@ public class WebInterstitialModel implements Parcelable {
         this.adEventId = adEventId;
     }
 
+    public String getWebButtonText() {
+        return webButtonText;
+    }
+
+    public void setWebButtonText(String webButtonText) {
+        this.webButtonText = webButtonText;
+    }
+
+    public String getWebAdDescription() {
+        return webAdDescription;
+    }
+
+    public void setWebAdDescription(String webAdDescription) {
+        this.webAdDescription = webAdDescription;
+    }
+
     public static Creator<WebInterstitialModel> getCREATOR() {
         return CREATOR;
     }
@@ -147,26 +170,8 @@ public class WebInterstitialModel implements Parcelable {
         intAdImageLink = in.readString();
         appUrl = in.readString();
         adEventId = in.readInt();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(adId);
-        dest.writeString(adType);
-        dest.writeString(intAdTitle);
-        dest.writeString(appName);
-        dest.writeString(appImage);
-        dest.writeString(webUrl);
-        dest.writeString(webAdImageLink);
-        dest.writeString(webAdVideoLink);
-        dest.writeString(intAdImageLink);
-        dest.writeString(appUrl);
-        dest.writeInt(adEventId);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        webButtonText = in.readString();
+        webAdDescription = in.readString();
     }
 
     public static final Creator<WebInterstitialModel> CREATOR = new Creator<WebInterstitialModel>() {
@@ -180,4 +185,26 @@ public class WebInterstitialModel implements Parcelable {
             return new WebInterstitialModel[size];
         }
     };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(adId);
+        parcel.writeString(adType);
+        parcel.writeString(intAdTitle);
+        parcel.writeString(appName);
+        parcel.writeString(appImage);
+        parcel.writeString(webUrl);
+        parcel.writeString(webAdImageLink);
+        parcel.writeString(webAdVideoLink);
+        parcel.writeString(intAdImageLink);
+        parcel.writeString(appUrl);
+        parcel.writeInt(adEventId);
+        parcel.writeString(webButtonText);
+        parcel.writeString(webAdDescription);
+    }
 }

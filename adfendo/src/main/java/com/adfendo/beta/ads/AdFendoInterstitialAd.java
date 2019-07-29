@@ -229,58 +229,8 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
 
     @SuppressLint("HardwareIds")
     private void requestForAd() {
+        new RequestInBackground().execute();
 
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        String agent = Utils.getAgentInfo();
-        String deviceId = "";
-        try {
-            deviceId = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
-        } catch (Exception e) {
-            Log.d(TAG, "requestForAd: " + e.getMessage());
-        }
-        Call<AdResponse> call = apiInterface.requestAd(unitId, AppID.getAppId(), Utils.location, key.getApiKey(), agent, deviceId);
-        call.enqueue(new Callback<AdResponse>() {
-            @Override
-            public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
-                adResponse = response.body();
-                if (adResponse != null) {
-                    if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
-                        setIsLoaded(true);
-                        if (interstitialAdListener != null) {
-                            interstitialAdListener.isLoaded(isLoaded());
-                        }
-                        switch (adResponse.getAdType()) {
-                            case Constants.DEFAULT:
-                                interstitialModel = adResponse.getInterstitial();
-                                adId = interstitialModel.getAdId();
-                                eventId = interstitialModel.getAdEventId();
-                                break;
-                            case Constants.CUSTOM:
-                                customInterstitialModel = adResponse.getCustomInterstitialAd();
-                                adId = customInterstitialModel.getAdId();
-                                eventId = customInterstitialModel.getAdEventId();
-                                break;
-                            case Constants.WEB:
-                                webInterstitialModel = adResponse.getWebInterstitialModel();
-                                adId = webInterstitialModel.getAdId();
-                                eventId = webInterstitialModel.getAdEventId();
-                                break;
-                        }
-                    } else {
-                        if (interstitialAdListener != null) {
-                            setErrorCodeListener(adResponse.getCode());
-                        }
-                        setIsLoaded(false);
-                    }
-                }
-            }
-            @Override
-            public void onFailure(Call<AdResponse> call, Throwable t) {
-                if (interstitialAdListener != null) {
-                    interstitialAdListener.onFailedToLoad(ResponseCode.SOMETHING_WENT_WRONG);
-                }
-            }
-        });
     }
 
     private void setErrorCodeListener(int code) {
@@ -325,6 +275,66 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                 @Override
                 public void onFailure(Call<AdResponse> call, Throwable t) {
                     Log.d(TAG, "onFailure: " + t.getMessage());
+                }
+            });
+            return null;
+        }
+    }
+
+    class RequestInBackground extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+            String agent = Utils.getAgentInfo();
+            String deviceId = "";
+            try {
+                deviceId = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
+            } catch (Exception e) {
+                Log.d(TAG, "requestForAd: " + e.getMessage());
+            }
+            Call<AdResponse> call = apiInterface.requestAd(unitId, AppID.getAppId(), Utils.location, key.getApiKey(), agent, deviceId);
+            call.enqueue(new Callback<AdResponse>() {
+                @Override
+                public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
+                    adResponse = response.body();
+                    if (adResponse != null) {
+                        if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
+                            setIsLoaded(true);
+                            if (interstitialAdListener != null) {
+                                interstitialAdListener.isLoaded(isLoaded());
+                            }
+                            switch (adResponse.getAdType()) {
+                                case Constants.DEFAULT:
+                                    interstitialModel = adResponse.getInterstitial();
+                                    adId = interstitialModel.getAdId();
+                                    eventId = interstitialModel.getAdEventId();
+                                    break;
+                                case Constants.CUSTOM:
+                                    customInterstitialModel = adResponse.getCustomInterstitialAd();
+                                    adId = customInterstitialModel.getAdId();
+                                    eventId = customInterstitialModel.getAdEventId();
+                                    break;
+                                case Constants.WEB:
+                                    webInterstitialModel = adResponse.getWebInterstitialModel();
+                                    adId = webInterstitialModel.getAdId();
+                                    eventId = webInterstitialModel.getAdEventId();
+                                    break;
+                            }
+                        } else {
+                            if (interstitialAdListener != null) {
+                                setErrorCodeListener(adResponse.getCode());
+                            }
+                            setIsLoaded(false);
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<AdResponse> call, Throwable t) {
+                    if (interstitialAdListener != null) {
+                        interstitialAdListener.onFailedToLoad(ResponseCode.SOMETHING_WENT_WRONG);
+                    }
                 }
             });
             return null;

@@ -1,5 +1,6 @@
 package com.adfendo.beta.ads;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +46,7 @@ public class WebInterstitial extends AppCompatActivity {
     private Button visitButton;
     private long clickedTime;
     private boolean isClicked;
+    private TextView description;
 
     private static final String TAG = "WebInterstitial";
     long differenceBetweenImpAndClick;
@@ -75,6 +78,14 @@ public class WebInterstitial extends AppCompatActivity {
         imageViewWeb = findViewById(R.id.image_view_web);
         cancelButton = findViewById(R.id.cancelButton);
         visitButton = findViewById(R.id.visitButton);
+        description = findViewById(R.id.description);
+
+        if (webInterstitialModel.getWebAdDescription() != null) {
+            description.setVisibility(View.VISIBLE);
+            description.setText(webInterstitialModel.getWebAdDescription());
+        }
+
+        visitButton.setText(webInterstitialModel.getWebButtonText());
         if (webInterstitialModel.getWebAdImageLink() != null)
             Glide.with(this).load(webInterstitialModel.getWebAdImageLink()).into(imageViewWeb);
         visitButton.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +94,6 @@ public class WebInterstitial extends AppCompatActivity {
                 isClicked = true;
                 clickedTime = SystemClock.elapsedRealtime();
                 differenceBetweenImpAndClick = Math.abs(clickedTime - AdFendoInterstitialAd.impressionMillisecond) / 1000;
-                Toast.makeText(WebInterstitial.this, "" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInterstitialModel.getWebUrl()));
                 startActivity(browserIntent);
                 saveDataToServer(isClicked, webInterstitialModel.getAdId());
@@ -123,6 +133,7 @@ public class WebInterstitial extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     class WebInterstitialDataSaveInBackground extends AsyncTask<Integer, Void, Void> {
 
         @Override

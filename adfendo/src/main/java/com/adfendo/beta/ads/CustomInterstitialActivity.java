@@ -2,6 +2,7 @@ package com.adfendo.beta.ads;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -53,13 +54,14 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     private Utils utils;
     private AdResponse adResponse;
     private String adUnitId = "";
+    private boolean isClicked = false;
 
     private static CustomInterstitialModel customInterstitialAd;
     private ImageView fullImage;
     private long mLastClickTime = 0;
     long clickedTime;
     private static CustomAdClosedListener onClosedListener;
-
+    private long differenceBetweenImpAndClick=0;
     private static final String TAG = "CustomInterstitialActiv";
     public void setListener(CustomAdClosedListener listener) {
         onClosedListener = listener;
@@ -67,7 +69,6 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     public interface CustomAdClosedListener extends NetworkListener  {
         void onCustomAdClosed();
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,8 +98,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 clickedTime = SystemClock.elapsedRealtime();
-                long differenceBetweenImpAndClick = Math.abs(clickedTime -AdFendoInterstitialAd.impressionMillisecond ) / 1000;
-                Toast.makeText(CustomInterstitialActivity.this, "Difference :" + differenceBetweenImpAndClick, Toast.LENGTH_SHORT).show();
+                 differenceBetweenImpAndClick = Math.abs(clickedTime -AdFendoInterstitialAd.impressionMillisecond ) / 1000;
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
                 }
@@ -137,35 +137,9 @@ public class CustomInterstitialActivity extends AppCompatActivity {
         textViewTotalReview.setText(customInterstitialAd.getAppReview());
     }
     private void saveDataToServer(final boolean isClicked, final int adID) {
-        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Key key = new Key();
-        Call<AdResponse> call = apiInterface.clickAd(customInterstitialAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), customInterstitialAd.getAdEventId(), Utils.getAgentInfo(), AdFendo.getAndroidId(),
-                clickedTime);
-        call.enqueue(new Callback<AdResponse>() {
-            @Override
-            public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
-                AdResponse adResponse = response.body();
-                if (isClicked) {
-                   
-                    if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
-                        Log.d(TAG, "onResponse: "+ ResponseCode.VALID_RESPONSE);
-                    }else if(adResponse.getCode() == ResponseCode.FRAUD_CLICK){
-                        Log.d(TAG, "onResponse: "+ ResponseCode.FRAUD_CLICK);
-                    }else if (adResponse.getCode() == ResponseCode.CLICK_ERROR){
-                        Log.d(TAG, "onResponse: "+ ResponseCode.CLICK_ERROR);
-                    }
-                    if (onClosedListener != null){
-                        onClosedListener.onCustomAdClosed();
-                    }
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AdResponse> call, Throwable t) {
-                Log.d(CustomInterstitialActivity.class.getSimpleName(), "" + t.getMessage());
-            }
-        });
+        if (isClicked) {
+            new CustomInterstitialDataSaveInBackground().execute(adID);
+        }
     }
 
     @Override
@@ -175,7 +149,6 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             onClosedListener.onCustomAdClosed();
         }
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -183,7 +156,6 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             onClosedListener = null;
         }
     }
-
     public boolean checkConnection() {
         Runtime runtime = Runtime.getRuntime();
         try {
@@ -196,5 +168,54 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return false;
+    }
+    class CustomInterstitialDataSaveInBackground extends AsyncTask<Integer, Void, Void> {
+        @Override
+        protected Void doInBackground(Integer... integers) {
+            int adid = integers[0];
+            ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+            Key key = new Key();
+            Call<AdResponse> call = apiInterface.clickAd(adid,
+                    adUnitId,
+                    AppID.getAppId(),
+                    key.getApiKey(),
+                    customInterstitialAd.getAdEventId(),
+                    Utils.getAgentInfo(),
+                    AdFendo.getAndroidId(),
+                    differenceBetweenImpAndClick);
+            call.enqueue(new Callback<AdResponse>() {
+                @Override
+                public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
+                    AdResponse adResponse = response.body();
+                    if (isClicked) {
+                        if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
+                            Log.d(TAG, "onResponse: "+ ResponseCode.VALID_RESPONSE);
+                        }else if(adResponse.getCode() == ResponseCode.FRAUD_CLICK){
+                            Log.d(TAG, "onResponse: "+ ResponseCode.FRAUD_CLICK);
+                        }else if (adResponse.getCode() == ResponseCode.CLICK_ERROR){
+                            Log.d(TAG, "onResponse: "+ ResponseCode.CLICK_ERROR);
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<AdResponse> call, Throwable t) {
+                    Log.d(CustomInterstitialActivity.class.getSimpleName(), "" + t.getMessage());
+                    if (onClosedListener != null){
+                        onClosedListener.onCustomAdClosed();
+                    }
+                    finish();
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (onClosedListener != null){
+                onClosedListener.onCustomAdClosed();
+            }
+            finish();
+        }
     }
 }

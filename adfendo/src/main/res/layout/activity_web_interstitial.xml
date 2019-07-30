@@ -40,7 +40,6 @@
         android:background="@color/cycen"
         android:orientation="vertical"
         android:padding="5dp">
-
         <Button
             android:id="@+id/visitButton"
             android:layout_width="wrap_content"
@@ -49,8 +48,7 @@
             android:background="@drawable/custom_app_install_button"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:textColor="@color/white" />
-
+            android:textColor="#1167C2" />
         <LinearLayout
             android:id="@+id/info_layout"
             android:layout_width="wrap_content"

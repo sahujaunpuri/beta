@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ad_layout"
     android:layout_width="match_parent"
@@ -25,7 +26,7 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:background="@android:color/white">
-            <androidx.viewpager.widget.ViewPager
+            <android.support.v4.view.ViewPager
                 android:id="@+id/view_pager"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
@@ -121,7 +122,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/google_play_icon"
+                    app:srcCompat="@drawable/google_play_icon"
                     android:layout_marginRight="8dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -160,7 +161,7 @@
     <ImageView
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/info"
+        app:srcCompat="@drawable/info"
         android:layout_alignParentBottom="true"
         android:layout_margin="8dp"/>
 </RelativeLayout>

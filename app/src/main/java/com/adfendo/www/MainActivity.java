@@ -1,15 +1,14 @@
 package com.adfendo.www;
 
 import android.os.Bundle;
-import android.view.View;
+
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.adfendo.beta.ads.AdFendoInterstitialAd;
-import com.adfendo.beta.ads.BannerAd;
-import com.adfendo.beta.ads.VideoAd;
+
 import com.adfendo.beta.interfaces.InterstitialAdListener;
 import com.adfendo.beta.utilities.AdFendo;
 

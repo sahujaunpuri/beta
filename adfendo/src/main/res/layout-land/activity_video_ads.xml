@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ad_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -44,7 +45,7 @@
                 android:gravity="center"
                 android:background="@drawable/button_background"/>
 
-            <androidx.viewpager.widget.ViewPager
+            <android.support.v4.view.ViewPager
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -169,7 +170,7 @@
                             android:layout_height="32dp"
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="8dp"
-                            android:src="@drawable/google_play_icon" />
+                            app:srcCompat="@drawable/google_play_icon" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -221,7 +222,7 @@
                         android:layout_height="24dp"
                         android:layout_alignParentBottom="true"
                         android:layout_margin="4dp"
-                        android:src="@drawable/info" />
+                        app:srcCompat="@drawable/info" />
 
                     <TextView
                         android:id="@+id/info_text"

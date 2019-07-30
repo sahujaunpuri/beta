@@ -40,7 +40,5 @@
 
 
 -keep class com.adfendo.beta.model.** { *; }
+-keep class com.adfendo.beta.ads.** { *; }
 
--keepclassmembers class com.adfendo.beta.ads.AdFendoInterstitialAd** {
-    *;
- }

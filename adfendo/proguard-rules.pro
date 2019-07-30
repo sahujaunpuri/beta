@@ -42,5 +42,5 @@
 -keep class com.adfendo.beta.model.** { *; }
 -keep class com.adfendo.beta.ads.** { *; }
 -keep class com.adfendo.beta.utilities.AdFendo { *; }
--keep class com.adfendo.beta.interfaces.InterstitialAdListener {*;}
+-keep public interface class com.adfendo.beta.interfaces.InterstitialAdListener {*;}
 

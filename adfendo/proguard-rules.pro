@@ -41,4 +41,5 @@
 
 -keep class com.adfendo.beta.model.** { *; }
 -keep class com.adfendo.beta.ads.** { *; }
+-keep class com.adfendo.beta.utilities.AdFendo { *; }
 

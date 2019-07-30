@@ -112,15 +112,16 @@
             android:singleLine="true"
             android:layout_gravity="center_horizontal"
             android:textColor="@android:color/white" />
+
         <Button
             android:id="@+id/install_button"
             android:layout_width="220dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/custom_app_install_button"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/button_background"
             android:padding="10dp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/cycen"
             android:textStyle="bold" />
         <LinearLayout android:id="@+id/info_layout"
             android:layout_width="wrap_content"
@@ -138,7 +139,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="6dp"
+                android:layout_marginRight="6dp"
                 android:text="@string/ads_by_fendomob"
                 android:textColor="@android:color/white"
                 android:visibility="visible" />

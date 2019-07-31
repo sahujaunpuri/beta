@@ -10,25 +10,19 @@ import android.widget.Toast;
 import com.adfendo.beta.ads.AdFendoInterstitialAd;
 
 import com.adfendo.beta.interfaces.InterstitialAdListener;
-import com.adfendo.beta.utilities.AdFendo;
+import com.adfendo.beta.ads.AdFendo;
 
 public class    MainActivity extends AppCompatActivity {
     AdFendoInterstitialAd adFendoInterstitialAd;
     private static final String TAG = "Debug";
-
-    Button interstetialButton;
-
+    Button interstitialButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        interstetialButton = findViewById(R.id.interstetial);
-
-        AdFendo.initialize(this, "pub-app-314377906");
-
-
-
+        interstitialButton = findViewById(R.id.interstetial);
+        AdFendo.initialize( "pub-app-314377906");
         adFendoInterstitialAd = new AdFendoInterstitialAd(this, "pub-ad-unit-id-314377906~919981366");
         adFendoInterstitialAd.requestAd();
 
@@ -36,7 +30,6 @@ public class    MainActivity extends AppCompatActivity {
             @Override
             public void onClosed() {
                 adFendoInterstitialAd.requestAd();
-//               Toast.makeText(MainActivity.this, "onClosed called ", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onFailedToLoad(int errorMessage) {
@@ -53,7 +46,7 @@ public class    MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "onImpression called", Toast.LENGTH_SHORT).show();
             }
         });
-        interstetialButton.setOnClickListener(v -> {
+        interstitialButton.setOnClickListener(v -> {
             if (adFendoInterstitialAd.isLoaded()) {
                 adFendoInterstitialAd.showAd();
             } else {

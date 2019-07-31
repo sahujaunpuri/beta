@@ -1,4 +1,4 @@
-package com.adfendo.beta.ads;
+package com.adfendo.beta.disclosed;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -17,12 +17,13 @@ import android.widget.TextView;
 
 import com.adfendo.beta.R;
 import com.adfendo.beta.adapter.SliderImageAdapter;
+import com.adfendo.beta.ads.AdFendo;
+import com.adfendo.beta.ads.AdFendoInterstitialAd;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
 import com.adfendo.beta.interfaces.NetworkListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.CustomInterstitialModel;
-import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
 import com.adfendo.beta.utilities.ResponseCode;
@@ -96,7 +97,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 clickedTime = SystemClock.elapsedRealtime();
-                 differenceBetweenImpAndClick = Math.abs(clickedTime -AdFendoInterstitialAd.impressionMillisecond ) / 1000;
+                 differenceBetweenImpAndClick = Math.abs(clickedTime - AdFendoInterstitialAd.impressionMillisecond ) / 1000;
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
                 }
@@ -179,7 +180,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
                     key.getApiKey(),
                     customInterstitialAd.getAdEventId(),
                     Utils.getAgentInfo(),
-                    AdFendo.getAndroidId(),
+                    AdFendoInterstitialAd.getAndroidId(),
                     differenceBetweenImpAndClick);
             call.enqueue(new Callback<AdResponse>() {
                 @Override

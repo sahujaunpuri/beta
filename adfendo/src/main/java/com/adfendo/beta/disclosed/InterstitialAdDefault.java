@@ -1,4 +1,4 @@
-package com.adfendo.beta.ads;
+package com.adfendo.beta.disclosed;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -21,13 +21,14 @@ import android.widget.TextView;
 
 import com.adfendo.beta.R;
 import com.adfendo.beta.adapter.SliderImageAdapter;
+import com.adfendo.beta.ads.AdFendo;
+import com.adfendo.beta.ads.AdFendoInterstitialAd;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
 import com.adfendo.beta.interfaces.InterstitialAdListener;
 import com.adfendo.beta.interfaces.NetworkListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.InterstitialModel;
-import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
 import com.adfendo.beta.utilities.Key;
@@ -290,7 +291,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
                     AppID.getAppId(),
                     key.getApiKey(),
                     interstitialModel.getAdEventId(),
-                    Utils.getAgentInfo(), AdFendo.getAndroidId(),
+                    Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId(),
                     differenceBetweenImpAndClick
             );
             call.enqueue(new Callback<AdResponse>() {

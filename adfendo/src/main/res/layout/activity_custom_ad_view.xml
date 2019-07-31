@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#eceff1"
     android:id="@+id/container"
-    tools:context=".ads.CustomInterstitialActivity">
+    tools:context=".disclosed.CustomInterstitialActivity">
 
     <Button
         android:id="@+id/cancelButton"

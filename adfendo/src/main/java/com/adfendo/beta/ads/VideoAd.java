@@ -33,7 +33,6 @@ import com.adfendo.beta.callback.ApiInterface;
 import com.adfendo.beta.interfaces.VideoAdListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.Video;
-import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
@@ -280,7 +279,7 @@ public class VideoAd extends AppCompatActivity {
                     apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                     Call<AdResponse> call = apiInterface.requestVideoAd(addUnitId,
                             AppID.getAppId(),
-                            Utils.location, key.getApiKey(),Utils.getAgentInfo(),AdFendo.getAndroidId());
+                            Utils.location, key.getApiKey(),Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId());
                     call.enqueue(new Callback<AdResponse>() {
                         @Override
                         public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -348,7 +347,7 @@ public class VideoAd extends AppCompatActivity {
                 apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                 Key key = new Key();
                 String appId = AppID.getAppId();
-                Call<AdResponse> call = apiInterface.adImpression(video.getAdId(), addUnitId, appId, key.getApiKey(), video.getAdEventId(),Utils.getAgentInfo(),AdFendo.getAndroidId());
+                Call<AdResponse> call = apiInterface.adImpression(video.getAdId(), addUnitId, appId, key.getApiKey(), video.getAdEventId(),Utils.getAgentInfo(),AdFendoInterstitialAd.getAndroidId());
                 call.enqueue(new Callback<AdResponse>() {
                     @Override
                     public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -386,7 +385,7 @@ public class VideoAd extends AppCompatActivity {
                 key.getApiKey(),
                 video.getAdEventId(),
                 Utils.getAgentInfo(),
-                AdFendo.getAndroidId(),
+                AdFendoInterstitialAd.getAndroidId(),
                 diff );
         call.enqueue(new Callback<AdResponse>() {
             @Override

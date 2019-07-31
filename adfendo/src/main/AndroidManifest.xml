@@ -2,10 +2,10 @@
     package="com.adfendo.beta" >
 
     <application>
-        <activity android:name=".ads.CustomInterstitialActivity" />
-        <activity android:name=".ads.InterstitialAdDefault" />
+        <activity android:name=".disclosed.CustomInterstitialActivity" />
+        <activity android:name=".disclosed.InterstitialAdDefault" />
         <activity android:name=".ads.VideoAd" />
-        <activity android:name=".ads.WebInterstitial" />
+        <activity android:name=".disclosed.WebInterstitial" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

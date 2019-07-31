@@ -25,7 +25,6 @@ import com.adfendo.beta.callback.ApiInterface;
 import com.adfendo.beta.interfaces.BannerAdListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.Banner;
-import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
@@ -166,7 +165,7 @@ public class BannerAd extends LinearLayout {
                 apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                 Key key = new Key();
                 String appId = AppID.getAppId();
-                Call<AdResponse> call = apiInterface.adImpression(bannerAd.getAdId(), adUnitId, appId, key.getApiKey(), bannerAd.getAdEventId(),Utils.getAgentInfo(),AdFendo.getAndroidId());
+                Call<AdResponse> call = apiInterface.adImpression(bannerAd.getAdId(), adUnitId, appId, key.getApiKey(), bannerAd.getAdEventId(),Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId());
                 call.enqueue(new Callback<AdResponse>() {
                     @Override
                     public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -198,7 +197,7 @@ public class BannerAd extends LinearLayout {
             Key key = new Key();
             long diff = (impressionTime - SystemClock.elapsedRealtime())/1000;
             Call<AdResponse> call = apiInterface.clickAd(bannerAd.getAdId(), adUnitId, AppID.getAppId(), key.getApiKey(), bannerAd.getAdEventId(),
-                    Utils.getAgentInfo(),AdFendo.getAndroidId(),diff);
+                    Utils.getAgentInfo(),AdFendoInterstitialAd.getAndroidId(),diff);
             call.enqueue(new Callback<AdResponse>() {
                 @Override
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
@@ -231,7 +230,7 @@ public class BannerAd extends LinearLayout {
             String appId = AppID.getAppId();
             Key key = new Key();
             Call<AdResponse> call = apiInterface.requestBanner(adUnitId,
-                    appId, Utils.location, key.getApiKey(), Utils.getAgentInfo(), AdFendo.getAndroidId());
+                    appId, Utils.location, key.getApiKey(), Utils.getAgentInfo(),AdFendoInterstitialAd.getAndroidId());
             call.enqueue(new Callback<AdResponse>() {
                 @Override
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {

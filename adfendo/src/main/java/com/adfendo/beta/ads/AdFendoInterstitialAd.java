@@ -10,13 +10,15 @@ import android.util.Log;
 
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
+import com.adfendo.beta.disclosed.CustomInterstitialActivity;
+import com.adfendo.beta.disclosed.InterstitialAdDefault;
+import com.adfendo.beta.disclosed.WebInterstitial;
 import com.adfendo.beta.interfaces.InterstitialAdListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.CustomInterstitialModel;
 import com.adfendo.beta.model.InterstitialModel;
 import com.adfendo.beta.model.IpLocatoin;
 import com.adfendo.beta.model.WebInterstitialModel;
-import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
 import com.adfendo.beta.utilities.ResponseCode;
@@ -43,20 +45,30 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
     private int eventId;
     private int adId;
     private Key key;
-    InterstitialAdDefault defaultAd;
-    CustomInterstitialActivity custom;
-    WebInterstitial webInterstitial;
+    private InterstitialAdDefault defaultAd;
+    private CustomInterstitialActivity custom;
+    private WebInterstitial webInterstitial;
     private static final String TAG = "AdFendoInterstitialAd";
     public static long impressionMillisecond = 0;
     private long clickedMillisecond;
-
+    public static  String ANDROID_ID = "";
 
     public AdFendoInterstitialAd(Context context, String adUnitID) {
         AdFendoInterstitialAd.ctx = context;
         this.unitId = adUnitID;
         key = new Key();
+        setAndroidID(context);
     }
 
+    @SuppressLint("HardwareIds")
+    private static void setAndroidID(Context context) {
+        ANDROID_ID = Settings.Secure.getString(context.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+    }
+
+    public static String getAndroidId(){
+        return ANDROID_ID;
+    }
     public void setInterstitialAdListener(InterstitialAdListener interstitialAdListener) {
         this.interstitialAdListener = interstitialAdListener;
     }
@@ -261,7 +273,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                     unitId,
                     appId,
                     key.getApiKey(),
-                    eventId, Utils.getAgentInfo(), AdFendo.getAndroidId()
+                    eventId, Utils.getAgentInfo(), getAndroidId()
             );
             call.enqueue(new Callback<AdResponse>() {
                 @Override
@@ -285,7 +297,6 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
 
         @Override
         protected Void doInBackground(Void... voids) {
-
             ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
             String agent = Utils.getAgentInfo();
             String deviceId = "";
@@ -338,6 +349,12 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                 }
             });
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
         }
     }
 }

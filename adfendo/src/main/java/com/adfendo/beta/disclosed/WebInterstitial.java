@@ -1,4 +1,4 @@
-package com.adfendo.beta.ads;
+package com.adfendo.beta.disclosed;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -16,15 +16,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.adfendo.beta.R;
+import com.adfendo.beta.ads.AdFendo;
+import com.adfendo.beta.ads.AdFendoInterstitialAd;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
 
 import com.adfendo.beta.interfaces.NetworkListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.WebInterstitialModel;
-import com.adfendo.beta.utilities.AdFendo;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
 import com.adfendo.beta.utilities.ResponseCode;
@@ -35,7 +35,6 @@ import com.bumptech.glide.Glide;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 public class WebInterstitial extends AppCompatActivity {
     private WebInterstitialModel webInterstitialModel;
@@ -140,15 +139,7 @@ public class WebInterstitial extends AppCompatActivity {
             int adid = integers[0];
             ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
             Key key = new Key();
-            Call<AdResponse> call = apiInterface.clickAd(
-                    adid,
-                    adUnitId,
-                    AppID.getAppId(),
-                    key.getApiKey(),
-                    webInterstitialModel.getAdEventId(),
-                    Utils.getAgentInfo(),
-                    AdFendo.getAndroidId(),
-                    differenceBetweenImpAndClick
+            Call<AdResponse> call = apiInterface.clickAd(adid, adUnitId, AppID.getAppId(), key.getApiKey(), webInterstitialModel.getAdEventId(), Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId(), differenceBetweenImpAndClick
             );
             call.enqueue(new Callback<AdResponse>() {
                 @Override

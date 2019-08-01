@@ -16,7 +16,7 @@ import retrofit2.Response;
 
 
 public class Utils {
-    public static String location = "";
+    public static String location = ",";
     IpLocatoin ipLocatoin;
 
     public void getLocation() {

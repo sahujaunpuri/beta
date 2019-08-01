@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.adfendo.beta.R;
 import com.adfendo.beta.adapter.SliderImageAdapter;
-import com.adfendo.beta.ads.AdFendo;
 import com.adfendo.beta.ads.AdFendoInterstitialAd;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
@@ -26,8 +25,8 @@ import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.CustomInterstitialModel;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
-import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
+import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
 
@@ -59,15 +58,18 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     private ImageView fullImage;
     private long mLastClickTime = 0;
     long clickedTime;
-    private static CustomAdClosedListener onClosedListener;
-    private long differenceBetweenImpAndClick=0;
+    private  CustomAdClosedListener onClosedListener;
+    private long differenceBetweenImpAndClick = 0;
     private static final String TAG = "CustomInterstitialActiv";
+
     public void setListener(CustomAdClosedListener listener) {
         onClosedListener = listener;
     }
-    public interface CustomAdClosedListener extends NetworkListener  {
+
+    public interface CustomAdClosedListener extends NetworkListener {
         void onCustomAdClosed();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +99,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 clickedTime = SystemClock.elapsedRealtime();
-                 differenceBetweenImpAndClick = Math.abs(clickedTime - AdFendoInterstitialAd.impressionMillisecond ) / 1000;
+                differenceBetweenImpAndClick = Math.abs(clickedTime - AdFendoInterstitialAd.impressionMillisecond) / 1000;
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
                 }
@@ -110,13 +112,12 @@ public class CustomInterstitialActivity extends AppCompatActivity {
                 } catch (android.content.ActivityNotFoundException anfe) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(customInterstitialAd.getAppUrl())));
                 }
-                finish();
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onClosedListener != null){
+                if (onClosedListener != null) {
                     onClosedListener.onCustomAdClosed();
                 }
                 finish();
@@ -126,6 +127,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
             display();
         }
     }
+
     private void display() {
         Glide.with(this).load(customInterstitialAd.getIntAdImageLink()).into(fullImage);
         description.setText(customInterstitialAd.getIntAdDescription());
@@ -135,6 +137,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
         textViewRating.setText(customInterstitialAd.getAppRating());
         textViewTotalReview.setText(customInterstitialAd.getAppReview());
     }
+
     private void saveDataToServer(final boolean isClicked, final int adID) {
         if (isClicked) {
             new CustomInterstitialDataSaveInBackground().execute(adID);
@@ -144,17 +147,19 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (onClosedListener != null){
+        if (onClosedListener != null) {
             onClosedListener.onCustomAdClosed();
         }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (onClosedListener != null){
+        if (onClosedListener != null) {
             onClosedListener = null;
         }
     }
+
     public boolean checkConnection() {
         Runtime runtime = Runtime.getRuntime();
         try {
@@ -168,38 +173,33 @@ public class CustomInterstitialActivity extends AppCompatActivity {
         }
         return false;
     }
+
     class CustomInterstitialDataSaveInBackground extends AsyncTask<Integer, Void, Void> {
         @Override
         protected Void doInBackground(Integer... integers) {
             int adid = integers[0];
             ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
             Key key = new Key();
-            Call<AdResponse> call = apiInterface.clickAd(adid,
-                    adUnitId,
-                    AppID.getAppId(),
-                    key.getApiKey(),
-                    customInterstitialAd.getAdEventId(),
-                    Utils.getAgentInfo(),
-                    AdFendoInterstitialAd.getAndroidId(),
-                    differenceBetweenImpAndClick);
+            Call<AdResponse> call = apiInterface.clickAd(adid, adUnitId, AppID.getAppId(), key.getApiKey(), customInterstitialAd.getAdEventId(), Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId(), differenceBetweenImpAndClick);
             call.enqueue(new Callback<AdResponse>() {
                 @Override
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                     AdResponse adResponse = response.body();
                     if (isClicked) {
                         if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
-                            Log.d(TAG, "onResponse: "+ ResponseCode.VALID_RESPONSE);
-                        }else if(adResponse.getCode() == ResponseCode.FRAUD_CLICK){
-                            Log.d(TAG, "onResponse: "+ ResponseCode.FRAUD_CLICK);
-                        }else if (adResponse.getCode() == ResponseCode.CLICK_ERROR){
-                            Log.d(TAG, "onResponse: "+ ResponseCode.CLICK_ERROR);
+                            Log.d(TAG, "onResponse: " + ResponseCode.VALID_RESPONSE);
+                        } else if (adResponse.getCode() == ResponseCode.FRAUD_CLICK) {
+                            Log.d(TAG, "onResponse: " + ResponseCode.FRAUD_CLICK);
+                        } else if (adResponse.getCode() == ResponseCode.CLICK_ERROR) {
+                            Log.d(TAG, "onResponse: " + ResponseCode.CLICK_ERROR);
                         }
                     }
                 }
+
                 @Override
                 public void onFailure(Call<AdResponse> call, Throwable t) {
                     Log.d(CustomInterstitialActivity.class.getSimpleName(), "" + t.getMessage());
-                    if (onClosedListener != null){
+                    if (onClosedListener != null) {
                         onClosedListener.onCustomAdClosed();
                     }
                     finish();
@@ -211,7 +211,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (onClosedListener != null){
+            if (onClosedListener != null) {
                 onClosedListener.onCustomAdClosed();
             }
             finish();

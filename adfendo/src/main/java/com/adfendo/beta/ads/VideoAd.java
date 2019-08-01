@@ -1,5 +1,6 @@
 package com.adfendo.beta.ads;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
@@ -32,6 +33,7 @@ import com.adfendo.beta.callback.ApiInterface;
 
 import com.adfendo.beta.interfaces.VideoAdListener;
 import com.adfendo.beta.model.AdResponse;
+import com.adfendo.beta.model.IpLocatoin;
 import com.adfendo.beta.model.Video;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.ResponseCode;
@@ -63,15 +65,10 @@ public class VideoAd extends AppCompatActivity {
     public static List<String> listOfImages;
     ViewPager viewPager;
     Context context;
-
+    private IpLocatoin ipLocatoin;
     public VideoAd(Context context, String uniteId) {
         this.context = context;
-        if (Utils.location == null || Utils.location.equals("")) {
-            Utils utils = new Utils();
-            utils.getLocation();
-        }
         addUnitId = uniteId;
-        this.requestAd();
     }
 
     public VideoAd() {
@@ -245,8 +242,8 @@ public class VideoAd extends AppCompatActivity {
             }
             textViewAppName.setText(video.getAppName());
             textViewRating.setText(String.valueOf(df.format(Double.valueOf(video.getAppRating()))));
-            textViewOfferedBy.setText(video.getIntAdDescription1() + "");
-            textViewStatusOfApp.setText(video.getAppStatus() + "");
+            textViewOfferedBy.setText(String.valueOf(video.getIntAdDescription1()));
+            textViewStatusOfApp.setText(String.valueOf(video.getAppStatus()));
             review = Long.valueOf(video.getAppReview().replaceAll(",", ""));
             textViewTotalReview.setText(Utils.getRoughNumber(review));
             actionButton.setText(video.getAppButtonText());
@@ -267,9 +264,22 @@ public class VideoAd extends AppCompatActivity {
         }
     }
     public void requestAd() {
-        new LoadAdInBackGround().execute();
+        if (checkConnection()){
+            if (Utils.location.equals(",")) {
+                new GetLocation().execute();
+            }else{
+                new LoadAdInBackGround().execute();
+            }
+
+        }else{
+            if (videoAdListener != null){
+                videoAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
+            }
+        }
+
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class LoadAdInBackGround extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(final Void... voids) {
@@ -285,39 +295,56 @@ public class VideoAd extends AppCompatActivity {
                         public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                             adResponse = response.body();
                             if (adResponse != null) {
-                                switch (adResponse.getCode()) {
-                                    case ResponseCode.VALID_RESPONSE:
-                                        video = adResponse.getVideoAd();
-                                        if (video != null) {
-                                            listOfImages = new ArrayList<>();
-                                            listOfImages.add(video.getIntAdImageLink1());
-                                            listOfImages.add(video.getIntAdImageLink2());
-                                            listOfImages.add(video.getIntAdImageLink3());
-                                            setIsLoaded(true);
-                                            videoAdListener.isLoaded(isLoaded());
-                                        } else {
-                                            setIsLoaded(false);
+                                if (adResponse.getCode() == ResponseCode.VALID_RESPONSE){
+                                    video = adResponse.getVideoAd();
+                                    if (video != null) {
+                                        listOfImages = new ArrayList<>();
+                                        listOfImages.add(video.getIntAdImageLink1());
+                                        listOfImages.add(video.getIntAdImageLink2());
+//                                        listOfImages.add(video.getIntAdImageLink3());
+                                        setIsLoaded(true);
+                                        if(videoAdListener != null){
                                             videoAdListener.isLoaded(isLoaded());
                                         }
-                                        break;
-                                    case ResponseCode.AD_NOT_AVAILABLE:
-                                        videoAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
-                                        break;
-                                    case ResponseCode.INVALID_AD_UNIT_ID:
-                                        videoAdListener.onFailedToLoad(ResponseCode.INVALID_AD_UNIT_ID);
-                                        break;
-                                    case ResponseCode.INVALID_API:
-                                        videoAdListener.onFailedToLoad(ResponseCode.INVALID_API);
-                                        break;
-                                    case ResponseCode.APP_ID_NOT_ACTIVE:
-                                        videoAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_ACTIVE);
-                                        break;
-                                    case ResponseCode.APP_NOT_ACTIVE:
-                                        videoAdListener.onFailedToLoad(ResponseCode.APP_NOT_ACTIVE);
-                                        break;
+
+                                    } else {
+                                        setIsLoaded(false);
+                                        if(videoAdListener != null){
+                                            videoAdListener.isLoaded(isLoaded());
+                                        }
+
+                                    }
+                                }else{
+                                    if (videoAdListener != null){
+                                        switch (adResponse.getCode()) {
+                                            case ResponseCode.VALID_RESPONSE:
+                                                break;
+                                            case ResponseCode.AD_NOT_AVAILABLE:
+                                                videoAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
+                                                break;
+                                            case ResponseCode.INVALID_AD_UNIT_ID:
+                                                videoAdListener.onFailedToLoad(ResponseCode.INVALID_AD_UNIT_ID);
+                                                break;
+                                            case ResponseCode.INVALID_API:
+                                                videoAdListener.onFailedToLoad(ResponseCode.INVALID_API);
+                                                break;
+                                            case ResponseCode.APP_ID_NOT_ACTIVE:
+                                                videoAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_ACTIVE);
+                                                break;
+                                            case ResponseCode.APP_NOT_ACTIVE:
+                                                videoAdListener.onFailedToLoad(ResponseCode.APP_NOT_ACTIVE);
+                                                break;
+                                        }
+                                        setIsLoaded(false);
+                                    }else{
+                                        setIsLoaded(false);
+                                    }
                                 }
 
+
                             } else {
+                                setIsLoaded(false);
+                                if (videoAdListener != null)
                                 videoAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
                             }
                         }
@@ -337,7 +364,8 @@ public class VideoAd extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        videoAdListener.onClosed();
+        if (videoAdListener != null)
+            videoAdListener.onClosed();
         finish();
     }
 
@@ -353,12 +381,15 @@ public class VideoAd extends AppCompatActivity {
                     public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                         AdResponse adResponse = response.body();
 
-                        if (adResponse.getImpression().equals("ok")) {
-                            videoAdListener.onImpression();
-                            impressionTime= SystemClock.elapsedRealtimeNanos();
-                            isIsImpressionSuccessfull = "0";
-                            isLoaded = false;
-                        } else {
+                        if (isClicked) {
+                            if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
+                                Log.d(TAG, "onResponse: " + ResponseCode.VALID_RESPONSE);
+                            } else if (adResponse.getCode() == ResponseCode.FRAUD_CLICK) {
+                                Log.d(TAG, "onResponse: " + ResponseCode.FRAUD_CLICK);
+                            } else if (adResponse.getCode() == ResponseCode.CLICK_ERROR) {
+                                Log.d(TAG, "onResponse: " + ResponseCode.CLICK_ERROR);
+                            }
+                        }else {
                             videoAdListener.onImpression();
                         }
                     }
@@ -444,5 +475,34 @@ public class VideoAd extends AppCompatActivity {
             e.printStackTrace();
         }
         return false;
+    }
+    @SuppressLint("StaticFieldLeak")
+    private class GetLocation extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+            Call<IpLocatoin> call = apiInterface.getLocation();
+            call.enqueue(new Callback<IpLocatoin>() {
+                @Override
+                public void onResponse(Call<IpLocatoin> call, Response<IpLocatoin> response) {
+                    ipLocatoin = response.body();
+                    if (ipLocatoin != null) {
+                        if (!ipLocatoin.getCountryLong().isEmpty()) {
+                            Utils.location = ipLocatoin.getRegion() +","+ipLocatoin.getCountryLong();
+                        }
+
+                    } else {
+                        Utils.location = ",";
+                    }
+
+                    requestAd();
+                }
+                @Override
+                public void onFailure(Call<IpLocatoin> call, Throwable t) {
+                    Log.d(TAG, "onFailure: " + t.getMessage());
+                }
+            });
+            return null;
+        }
     }
 }

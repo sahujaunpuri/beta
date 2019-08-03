@@ -58,7 +58,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     private ImageView fullImage;
     private long mLastClickTime = 0;
     long clickedTime;
-    private  CustomAdClosedListener onClosedListener;
+    private static CustomAdClosedListener onClosedListener;
     private long differenceBetweenImpAndClick = 0;
     private static final String TAG = "CustomInterstitialActiv";
 

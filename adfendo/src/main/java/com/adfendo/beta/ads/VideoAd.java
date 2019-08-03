@@ -25,12 +25,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-
 import com.adfendo.beta.R;
 import com.adfendo.beta.adapter.SliderImageAdapter;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
-
 import com.adfendo.beta.interfaces.VideoAdListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.IpLocatoin;
@@ -40,7 +38,6 @@ import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
-
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -54,6 +51,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class VideoAd extends AppCompatActivity {
+
     private static final String TAG = "VideoAd";
     public static VideoAdListener videoAdListener;
     public static String addUnitId;
@@ -66,6 +64,7 @@ public class VideoAd extends AppCompatActivity {
     ViewPager viewPager;
     Context context;
     private IpLocatoin ipLocatoin;
+
     public VideoAd(Context context, String uniteId) {
         this.context = context;
         addUnitId = uniteId;
@@ -74,8 +73,8 @@ public class VideoAd extends AppCompatActivity {
     public VideoAd() {
     }
 
-    public void setVideoAdListener(VideoAdListener videoAdListener) {
-        VideoAd.videoAdListener = videoAdListener;
+    public void setVideoAdListener(VideoAdListener listener) {
+        videoAdListener = listener;
     }
 
     ImageView appLogo;
@@ -91,6 +90,7 @@ public class VideoAd extends AppCompatActivity {
     TextView infoTextView;
     int color;
     private static boolean infoShow = true;
+
     //progress bar
     int duration = 0;
     ProgressBar progressBar;
@@ -117,33 +117,15 @@ public class VideoAd extends AppCompatActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
-        df = new DecimalFormat("##.##");
-        descripotionOne = findViewById(R.id.description_one);
-        infoButton = findViewById(R.id.infoButton);
-        androidColors = getResources().getIntArray(R.array.androidcolors);
-        actionButton = findViewById(R.id.install_button);
-        cancelButton = findViewById(R.id.cancelButton);
-        viewPager = findViewById(R.id.view_pager);
-        appLogo = findViewById(R.id.app_logo_video);
-        textViewAppName = findViewById(R.id.app_name_text_view);
-        textViewRating = findViewById(R.id.text_view_rating_in_point);
-        textViewOfferedBy = findViewById(R.id.text_view_offered_by);
-        textViewStatusOfApp = findViewById(R.id.text_view_free_or_paid);
-        textViewTotalReview = findViewById(R.id.text_view_total_review);
-        background = findViewById(R.id.ad_details_background);
-        infoTextView = findViewById(R.id.info_text);
-
-        progressBar = findViewById(R.id.progress_circular);
-        remainingTime = findViewById(R.id.remaining_time_text_view);
+        setUpUI();
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return;
                 }
                 mLastClickTime = SystemClock.elapsedRealtime();
-                clickedTime= SystemClock.elapsedRealtime();
+                clickedTime = SystemClock.elapsedRealtime();
 
                 saveDataToServer(true, String.valueOf(video.getAdId()));
                 String[] appPackageName = video.getAppUrl().split("=");
@@ -159,7 +141,9 @@ public class VideoAd extends AppCompatActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                videoAdListener.onClosed();
+                if (videoAdListener!=null){
+                    videoAdListener.onClosed();
+                }
                 finish();
             }
         });
@@ -183,13 +167,32 @@ public class VideoAd extends AppCompatActivity {
         display();
     }
 
+    private void setUpUI() {
+        df = new DecimalFormat("##.##");
+        descripotionOne = findViewById(R.id.description_one);
+        infoButton = findViewById(R.id.infoButton);
+        androidColors = getResources().getIntArray(R.array.androidcolors);
+        actionButton = findViewById(R.id.install_button);
+        cancelButton = findViewById(R.id.cancelButton);
+        viewPager = findViewById(R.id.view_pager);
+        appLogo = findViewById(R.id.app_logo_video);
+        textViewAppName = findViewById(R.id.app_name_text_view);
+        textViewRating = findViewById(R.id.text_view_rating_in_point);
+        textViewOfferedBy = findViewById(R.id.text_view_offered_by);
+        textViewStatusOfApp = findViewById(R.id.text_view_free_or_paid);
+        textViewTotalReview = findViewById(R.id.text_view_total_review);
+        background = findViewById(R.id.ad_details_background);
+        infoTextView = findViewById(R.id.info_text);
+        progressBar = findViewById(R.id.progress_circular);
+        remainingTime = findViewById(R.id.remaining_time_text_view);
+    }
+
     private void startTimer(final long miliseconds) {
         remainingTime.setVisibility(View.VISIBLE);
         new CountDownTimer(miliseconds, 1000) {
             public void onTick(long millisUntilFinished) {
                 remainingTime.setText(String.valueOf(millisUntilFinished / 1000));
             }
-
             public void onFinish() {
                 isShown = true;
                 remainingTime.setVisibility(View.GONE);
@@ -223,22 +226,26 @@ public class VideoAd extends AppCompatActivity {
                 String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                 long timeInMillisec = Long.parseLong(time);
                 retriever.release();
+
                 startTimer(timeInMillisec);
             } catch (Exception e) {
                 // TODO: handle exception
                 Log.d(TAG, e.getMessage());
             }
-
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     isClicked = false;
-                    videoAdListener.onClosed();
+                    if (videoAdListener != null) {
+                        videoAdListener.onClosed();
+                    }
                     finish();
                 }
             });
-            if (video.getAppImage() != null) {
-                Glide.with(VideoAd.this).load(video.getAppImage()).into(appLogo);
+            if (video!=null) {
+                if (!video.getAppImage().equals("")) {
+                    Glide.with(VideoAd.this).load(video.getAppImage()).into(appLogo);
+                }
             }
             textViewAppName.setText(video.getAppName());
             textViewRating.setText(String.valueOf(df.format(Double.valueOf(video.getAppRating()))));
@@ -250,7 +257,8 @@ public class VideoAd extends AppCompatActivity {
             isIsImpressionSuccessfull = "1";
             descripotionOne.setText(video.getIntAdDescription());
         } else {
-            videoAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
+            if (videoAdListener != null)
+                videoAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
         }
         impressionCall();
     }
@@ -260,25 +268,23 @@ public class VideoAd extends AppCompatActivity {
             Intent intent = new Intent(this.context, VideoAd.class);
             this.context.startActivity(intent);
         } else {
-            videoAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
+            if (videoAdListener != null)
+                videoAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
         }
     }
     public void requestAd() {
-        if (checkConnection()){
+        if (checkConnection()) {
             if (Utils.location.equals(",")) {
                 new GetLocation().execute();
-            }else{
+            } else {
                 new LoadAdInBackGround().execute();
             }
-
-        }else{
-            if (videoAdListener != null){
+        } else {
+            if (videoAdListener != null) {
                 videoAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
             }
         }
-
     }
-
     @SuppressLint("StaticFieldLeak")
     public class LoadAdInBackGround extends AsyncTask<Void, Void, Void> {
         @Override
@@ -289,13 +295,13 @@ public class VideoAd extends AppCompatActivity {
                     apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                     Call<AdResponse> call = apiInterface.requestVideoAd(addUnitId,
                             AppID.getAppId(),
-                            Utils.location, key.getApiKey(),Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId());
+                            Utils.location, key.getApiKey(), Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId());
                     call.enqueue(new Callback<AdResponse>() {
                         @Override
                         public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                             adResponse = response.body();
                             if (adResponse != null) {
-                                if (adResponse.getCode() == ResponseCode.VALID_RESPONSE){
+                                if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
                                     video = adResponse.getVideoAd();
                                     if (video != null) {
                                         listOfImages = new ArrayList<>();
@@ -303,19 +309,17 @@ public class VideoAd extends AppCompatActivity {
                                         listOfImages.add(video.getIntAdImageLink2());
 //                                        listOfImages.add(video.getIntAdImageLink3());
                                         setIsLoaded(true);
-                                        if(videoAdListener != null){
+                                        if (videoAdListener != null) {
                                             videoAdListener.isLoaded(isLoaded());
                                         }
-
                                     } else {
                                         setIsLoaded(false);
-                                        if(videoAdListener != null){
+                                        if (videoAdListener != null) {
                                             videoAdListener.isLoaded(isLoaded());
                                         }
-
                                     }
-                                }else{
-                                    if (videoAdListener != null){
+                                } else {
+                                    if (videoAdListener != null) {
                                         switch (adResponse.getCode()) {
                                             case ResponseCode.VALID_RESPONSE:
                                                 break;
@@ -336,22 +340,20 @@ public class VideoAd extends AppCompatActivity {
                                                 break;
                                         }
                                         setIsLoaded(false);
-                                    }else{
+                                    } else {
                                         setIsLoaded(false);
                                     }
                                 }
-
-
                             } else {
                                 setIsLoaded(false);
                                 if (videoAdListener != null)
-                                videoAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
+                                    videoAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
                             }
                         }
+
                         @Override
                         public void onFailure(Call<AdResponse> call, Throwable t) {
                             isLoaded = false;
-
                             Log.d(VideoAd.class.getSimpleName(), t.getMessage());
                         }
                     });
@@ -366,7 +368,16 @@ public class VideoAd extends AppCompatActivity {
         super.onBackPressed();
         if (videoAdListener != null)
             videoAdListener.onClosed();
+        if (video != null)
+            video = null;
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (video != null)
+            video = null;
     }
 
     private void impressionCall() {
@@ -375,12 +386,11 @@ public class VideoAd extends AppCompatActivity {
                 apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                 Key key = new Key();
                 String appId = AppID.getAppId();
-                Call<AdResponse> call = apiInterface.adImpression(video.getAdId(), addUnitId, appId, key.getApiKey(), video.getAdEventId(),Utils.getAgentInfo(),AdFendoInterstitialAd.getAndroidId());
+                Call<AdResponse> call = apiInterface.adImpression(video.getAdId(), addUnitId, appId, key.getApiKey(), video.getAdEventId(), Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId());
                 call.enqueue(new Callback<AdResponse>() {
                     @Override
                     public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                         AdResponse adResponse = response.body();
-
                         if (isClicked) {
                             if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
                                 Log.d(TAG, "onResponse: " + ResponseCode.VALID_RESPONSE);
@@ -389,53 +399,47 @@ public class VideoAd extends AppCompatActivity {
                             } else if (adResponse.getCode() == ResponseCode.CLICK_ERROR) {
                                 Log.d(TAG, "onResponse: " + ResponseCode.CLICK_ERROR);
                             }
-                        }else {
-                            videoAdListener.onImpression();
+                        } else {
+                            if (videoAdListener != null)
+                                videoAdListener.onImpression();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AdResponse> call, Throwable t) {
                         Log.d(TAG, "onFailure: " + t.getMessage());
-                        videoAdListener.onImpression();
+                        if (videoAdListener != null)
+                            videoAdListener.onImpression();
                     }
                 });
             }
         } else {
-            videoAdListener.onImpression();
+            if (videoAdListener != null)
+                videoAdListener.onImpression();
         }
     }
 
     private void saveDataToServer(final boolean isClicked, String adID) {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         Key key = new Key();
-        long diff = (impressionTime - clickedTime)/1000;
-        Call<AdResponse> call = apiInterface.clickAd(video.getAdId(),
-                addUnitId,
-                AppID.getAppId(),
-                key.getApiKey(),
-                video.getAdEventId(),
-                Utils.getAgentInfo(),
-                AdFendoInterstitialAd.getAndroidId(),
-                diff );
+        long diff = (impressionTime - clickedTime) / 1000;
+        Call<AdResponse> call = apiInterface.clickAd(video.getAdId(), addUnitId, AppID.getAppId(), key.getApiKey(), video.getAdEventId(), Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId(), diff);
         call.enqueue(new Callback<AdResponse>() {
             @Override
             public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                 AdResponse adResponse = response.body();
                 if (isClicked) {
-                    if (adResponse.getClick().equals("ok")) {
-                        videoAdListener.onClosed();
-                        isLoaded = false;
-                        setIsLoaded(isLoaded);
-                        videoAdListener.isLoaded(isLoaded);
+                    if (adResponse.getCode() == 200) {
+                        failedListener();
                     }
                 }
+                failedListener();
             }
 
             @Override
             public void onFailure(Call<AdResponse> call, Throwable t) {
                 Log.d(AdFendo.class.getSimpleName(), "" + t.getMessage());
-
+                failedListener();
             }
         });
     }
@@ -476,6 +480,7 @@ public class VideoAd extends AppCompatActivity {
         }
         return false;
     }
+
     @SuppressLint("StaticFieldLeak")
     private class GetLocation extends AsyncTask<Void, Void, Void> {
         @Override
@@ -488,15 +493,15 @@ public class VideoAd extends AppCompatActivity {
                     ipLocatoin = response.body();
                     if (ipLocatoin != null) {
                         if (!ipLocatoin.getCountryLong().isEmpty()) {
-                            Utils.location = ipLocatoin.getRegion() +","+ipLocatoin.getCountryLong();
+                            Utils.location = ipLocatoin.getRegion() + "," + ipLocatoin.getCountryLong();
                         }
-
                     } else {
                         Utils.location = ",";
                     }
 
                     requestAd();
                 }
+
                 @Override
                 public void onFailure(Call<IpLocatoin> call, Throwable t) {
                     Log.d(TAG, "onFailure: " + t.getMessage());
@@ -505,4 +510,14 @@ public class VideoAd extends AppCompatActivity {
             return null;
         }
     }
+
+    private void failedListener() {
+        isLoaded = false;
+        setIsLoaded(isLoaded);
+        if (videoAdListener != null) {
+            videoAdListener.isLoaded(isLoaded);
+            videoAdListener.onClosed();
+        }
+    }
+
 }

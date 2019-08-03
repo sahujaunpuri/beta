@@ -48,7 +48,7 @@ public class WebInterstitial extends AppCompatActivity {
 
     private static final String TAG = "WebInterstitial";
     long differenceBetweenImpAndClick;
-    private  WebAdCloseListener webAdCloseListener;
+    private static WebAdCloseListener webAdCloseListener;
 
     public interface WebAdCloseListener extends NetworkListener {
         void onWebAdClosed();

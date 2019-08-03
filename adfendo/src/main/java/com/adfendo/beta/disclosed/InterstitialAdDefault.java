@@ -58,7 +58,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
     ViewPager viewPager;
     private long mLastClickTime = 0;
     //your activity listener interface
-    private InterstitialAdCloseListener onClosedListener;
+    private static InterstitialAdCloseListener onClosedListener;
 
     public void setListener(InterstitialAdCloseListener listener) {
         onClosedListener = listener;

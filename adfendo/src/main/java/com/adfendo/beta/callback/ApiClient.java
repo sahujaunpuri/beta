@@ -7,8 +7,12 @@ public class ApiClient {
 
     public static final String BASE_URL="https://beta.adfendo.com/api/sdk/";
     public static final String BASE_URL_V2 = "https://beta.adfendo.com/api/sdk2/";
-    public static final String BASE_URL_TEST = "https://beta2.adfendo.com/api/sdk2/";
     public static final String LOCATION_URL = "https://ip-api.io/";
+
+
+
+    public static final String BASE_URL_TEST = "https://beta2.adfendo.com/api/sdk2/";
+
    static Retrofit retrofit;
     public static Retrofit getApiClient(){
         if (retrofit== null){

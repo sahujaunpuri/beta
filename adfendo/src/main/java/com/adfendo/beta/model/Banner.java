@@ -31,7 +31,7 @@ public class Banner {
     private String intAdDescription;
     @SerializedName("app_rating")
     @Expose
-    private Double appRating;
+    private double appRating;
     @SerializedName("app_review")
     @Expose
     private String appReview;
@@ -106,11 +106,11 @@ public class Banner {
         this.intAdDescription = intAdDescription;
     }
 
-    public Double getAppRating() {
+    public double getAppRating() {
         return appRating;
     }
 
-    public void setAppRating(Double appRating) {
+    public void setAppRating(double appRating) {
         this.appRating = appRating;
     }
 

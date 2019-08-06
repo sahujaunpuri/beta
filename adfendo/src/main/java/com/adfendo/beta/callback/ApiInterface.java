@@ -1,7 +1,7 @@
 package com.adfendo.beta.callback;
 
 import com.adfendo.beta.model.AdResponse;
-import com.adfendo.beta.model.IpLocatoin;
+import com.adfendo.beta.model.IpLocation;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -68,7 +68,7 @@ public interface ApiInterface {
 
 
     @GET("getIp")
-    Call<IpLocatoin> getLocation();
+    Call<IpLocation> getLocation();
 
 
 

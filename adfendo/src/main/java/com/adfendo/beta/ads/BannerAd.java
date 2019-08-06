@@ -119,8 +119,10 @@ public class BannerAd extends LinearLayout {
         textViewFreeOrPaid = view.findViewById(R.id.text_view_free_or_paid);
         textViewStar = view.findViewById(R.id.text_view_star);
         containerLayout = view.findViewById(R.id.container);
+
         mHeight = (Resources.getSystem().getDisplayMetrics().heightPixels * 15) / 100;
         mWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+
         if (checkConnection()) {
             if (loadAd) {
                 this.new RequestBannerAdInBackground().execute(view);
@@ -135,7 +137,6 @@ public class BannerAd extends LinearLayout {
                         return;
                     }
                     mLastClickTime = SystemClock.elapsedRealtime();
-
                     String[] appPackageName = bannerAd.getAppUrl().split("=");
                     new OnAdClickInBackground().execute();
                     bannerAdListener.onClosed();
@@ -170,13 +171,15 @@ public class BannerAd extends LinearLayout {
                     @Override
                     public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                         AdResponse adResponse = response.body();
-                        if (adResponse.getImpression().equals("ok")) {
-                            isIsImpressionSuccessfull = "0";
-                            impressionTime = SystemClock.elapsedRealtime();
-                            isLoaded = false;
-
-
+                        if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
+                            Log.d(TAG, "onResponse: " + ResponseCode.VALID_RESPONSE);
+                        } else if (adResponse.getCode() == ResponseCode.FRAUD_CLICK) {
+                            Log.d(TAG, "onResponse: " + ResponseCode.FRAUD_CLICK);
+                        } else if (adResponse.getCode() == ResponseCode.CLICK_ERROR) {
+                            Log.d(TAG, "onResponse: " + ResponseCode.CLICK_ERROR);
                         }
+                        impressionTime = SystemClock.elapsedRealtime();
+                        isLoaded = false;
                     }
 
                     @Override
@@ -203,7 +206,7 @@ public class BannerAd extends LinearLayout {
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                     AdResponse adResponse = response.body();
                     if (isClicked) {
-                        if (adResponse.getClick().equals("ok")) {
+                        if (adResponse.getCode()== ResponseCode.VALID_RESPONSE) {
                             bannerAdListener.onClosed();
                             isLoaded = false;
                             setIsLoaded(isLoaded);
@@ -236,39 +239,42 @@ public class BannerAd extends LinearLayout {
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                     if (response.body() != null) {
                         adResponse = response.body();
-                        switch (adResponse.getCode()) {
-                            case ResponseCode.VALID_RESPONSE:
-                                bannerAd = response.body().getBannerAd();
-                                if (bannerAd != null) {
-                                    bannerAdListener.onRequest(true);
-                                    isIsImpressionSuccessfull = "1";
-                                    appName.setText(bannerAd.getAppName());
-                                    textViewRatingPoint.setText(String.valueOf(bannerAd.getAppRating()));
-                                    review = Long.valueOf(bannerAd.getAppReview().replaceAll(",", ""));
-                                    textViewTotalReview.setText(Utils.getRoughNumber(review));
-                                    textViewFreeOrPaid.setText(String.valueOf(bannerAd.getAppStatus()));
-                                    Glide.with(view.getContext()).load(bannerAd.getAppImage()).into(imageView);
-                                    containerLayout.setVisibility(View.VISIBLE);
-                                    setIsLoaded(true);
-                                    bannerAdListener.isLoaded(isLoaded());
-                                    new ImpressionInBaground().execute();
-                                }
-                                break;
-                            case ResponseCode.AD_NOT_AVAILABLE:
-                                bannerAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
-                                break;
-                            case ResponseCode.APP_ID_NOT_INITIALIZED:
-                                bannerAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_INITIALIZED);
-                                break;
-                            case ResponseCode.INVALID_API:
-                                bannerAdListener.onFailedToLoad(ResponseCode.INVALID_API);
-                                break;
-                            case ResponseCode.APP_ID_NOT_ACTIVE:
-                                bannerAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_ACTIVE);
-                                break;
-                            case ResponseCode.APP_NOT_ACTIVE:
-                                bannerAdListener.onFailedToLoad(ResponseCode.APP_NOT_ACTIVE);
-                                break;
+
+                        bannerAd = response.body().getBannerAd();
+
+                        if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
+                            bannerAdListener.onRequest(true);
+                            appName.setText(bannerAd.getAppName());
+                            textViewRatingPoint.setText(String.valueOf(bannerAd.getAppRating()));
+                            review = Long.valueOf(bannerAd.getAppReview().replaceAll(",", ""));
+                            textViewTotalReview.setText(Utils.getRoughNumber(review));
+                            textViewFreeOrPaid.setText(String.valueOf(bannerAd.getAppStatus()));
+                            Glide.with(view.getContext()).load(bannerAd.getAppImage()).into(imageView);
+                            containerLayout.setVisibility(View.VISIBLE);
+                            setIsLoaded(true);
+                            bannerAdListener.isLoaded(isLoaded());
+                            isIsImpressionSuccessfull = "1";
+                            new ImpressionInBaground().execute();
+                        }
+                        if (bannerAdListener != null){
+
+                            switch (adResponse.getCode()) {
+                                case ResponseCode.AD_NOT_AVAILABLE:
+                                    bannerAdListener.onFailedToLoad(ResponseCode.AD_NOT_AVAILABLE);
+                                    break;
+                                case ResponseCode.APP_ID_NOT_INITIALIZED:
+                                    bannerAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_INITIALIZED);
+                                    break;
+                                case ResponseCode.INVALID_API:
+                                    bannerAdListener.onFailedToLoad(ResponseCode.INVALID_API);
+                                    break;
+                                case ResponseCode.APP_ID_NOT_ACTIVE:
+                                    bannerAdListener.onFailedToLoad(ResponseCode.APP_ID_NOT_ACTIVE);
+                                    break;
+                                case ResponseCode.APP_NOT_ACTIVE:
+                                    bannerAdListener.onFailedToLoad(ResponseCode.APP_NOT_ACTIVE);
+                                    break;
+                            }
                         }
                     }
                 }

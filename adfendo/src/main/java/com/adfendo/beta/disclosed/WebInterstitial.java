@@ -117,9 +117,6 @@ public class WebInterstitial extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (webAdCloseListener != null) {
-            webAdCloseListener.onWebAdClosed();
-        }
         finish();
     }
 
@@ -127,6 +124,7 @@ public class WebInterstitial extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (webAdCloseListener != null) {
+            webAdCloseListener.onWebAdClosed();
             webAdCloseListener = null;
         }
     }
@@ -154,6 +152,9 @@ public class WebInterstitial extends AppCompatActivity {
                             Log.d(TAG, "onResponse: " + ResponseCode.CLICK_ERROR);
                         }
                         isClicked = false;
+                        if (webAdCloseListener != null) {
+                            webAdCloseListener.onWebAdClosed();
+                        }
                     }
                 }
 
@@ -161,6 +162,9 @@ public class WebInterstitial extends AppCompatActivity {
                 public void onFailure(Call<AdResponse> call, Throwable t) {
                     Log.d(AdFendo.class.getSimpleName(), "" + t.getMessage());
                     isClicked = false;
+                    if (webAdCloseListener != null) {
+                        webAdCloseListener.onWebAdClosed();
+                    }
                 }
             });
             return null;

@@ -31,9 +31,9 @@ public class Video {
     @SerializedName("int_ad_image_link2")
     @Expose
     private String intAdImageLink2;
-//    @SerializedName("int_ad_image_link3")
-//    @Expose
-//    private String intAdImageLink3;
+    @SerializedName("int_ad_image_link3")
+    @Expose
+    private String intAdImageLink3;
     @SerializedName("app_url")
     @Expose
     private String appUrl;
@@ -127,14 +127,14 @@ public class Video {
     public void setIntAdImageLink2(String intAdImageLink2) {
         this.intAdImageLink2 = intAdImageLink2;
     }
-//
-//    public String getIntAdImageLink3() {
-//        return intAdImageLink3;
-//    }
-//
-//    public void setIntAdImageLink3(String intAdImageLink3) {
-//        this.intAdImageLink3 = intAdImageLink3;
-//    }
+
+    public String getIntAdImageLink3() {
+        return intAdImageLink3;
+    }
+
+    public void setIntAdImageLink3(String intAdImageLink3) {
+        this.intAdImageLink3 = intAdImageLink3;
+    }
 
     public String getAppUrl() {
         return appUrl;

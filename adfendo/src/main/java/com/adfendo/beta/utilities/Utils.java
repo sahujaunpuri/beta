@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
-import com.adfendo.beta.model.IpLocatoin;
+import com.adfendo.beta.model.IpLocation;
 
 import java.text.DecimalFormat;
 
@@ -17,7 +17,7 @@ import retrofit2.Response;
 
 public class Utils {
     public static String location = ",";
-    IpLocatoin ipLocatoin;
+    IpLocation ipLocation;
 
     public void getLocation() {
         new LocationInBackground().execute();
@@ -30,21 +30,21 @@ public class Utils {
         @Override
         protected Void doInBackground(Void... voids) {
             ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-            Call<IpLocatoin> call = apiInterface.getLocation();
-            call.enqueue(new Callback<IpLocatoin>() {
+            Call<IpLocation> call = apiInterface.getLocation();
+            call.enqueue(new Callback<IpLocation>() {
                 @Override
-                public void onResponse(Call<IpLocatoin> call, Response<IpLocatoin> response) {
-                    ipLocatoin = response.body();
-                    if (ipLocatoin != null) {
-                        if (!ipLocatoin.getCountryLong().isEmpty()) {
-                            location = ipLocatoin.getRegion() +","+ipLocatoin.getCountryLong();
+                public void onResponse(Call<IpLocation> call, Response<IpLocation> response) {
+                    ipLocation = response.body();
+                    if (ipLocation != null) {
+                        if (!ipLocation.getCountryLong().isEmpty()) {
+                            location = ipLocation.getCity() +","+ ipLocation.getCountryLong();
                         }
                     } else {
                         location = ",";
                     }
                 }
                 @Override
-                public void onFailure(Call<IpLocatoin> call, Throwable t) {
+                public void onFailure(Call<IpLocation> call, Throwable t) {
                     Log.d(TAG, "onFailure: " + t.getMessage());
                 }
             });
@@ -55,7 +55,7 @@ public class Utils {
         if (value <= 999) {
             return String.valueOf(value);
         }
-        final String[] units = new String[]{"", "K", "M", "B", "P"};
+        final String[] units = new String[]{"", "K", "M", "B", "T"};
         int digitGroups = (int) (Math.log10(value) / Math.log10(1000));
         return new DecimalFormat("#,##0.#").format(value / Math.pow(1000, digitGroups)) + "" + units[digitGroups];
     }

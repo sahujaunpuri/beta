@@ -59,13 +59,20 @@ public class InterstitialAdDefault extends AppCompatActivity {
     private long mLastClickTime = 0;
     //your activity listener interface
     private static InterstitialAdCloseListener onClosedListener;
+    private InterstitialAdClickedListner onClickedListner;
 
     public void setListener(InterstitialAdCloseListener listener) {
         onClosedListener = listener;
+
     }
 
     public interface InterstitialAdCloseListener extends NetworkListener {
         void onCloseListener();
+
+    }
+
+    public interface InterstitialAdClickedListner{
+        void onClickedListner();
     }
 
     public InterstitialAdDefault() {
@@ -83,7 +90,6 @@ public class InterstitialAdDefault extends AppCompatActivity {
     private static int randomAndroidColor;
     int[] androidColors;
     ImageView infoButton;
-    ImageView infoClose;
     TextView infoTextView;
     int color;
     private static boolean infoShow = true;
@@ -145,7 +151,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
                         return;
                     }
                     mLastClickTime = SystemClock.elapsedRealtime();
-                    saveDataToServer(true, interstitialModel.getAdId());
+
                     String[] appPackageName = interstitialModel.getAppUrl().split("=");
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW,
@@ -153,11 +159,11 @@ public class InterstitialAdDefault extends AppCompatActivity {
                     } catch (android.content.ActivityNotFoundException anfe) {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(interstitialModel.getAppUrl())));
                     }
+                    saveDataToServer(true, interstitialModel.getAdId());
                 } else {
                     if (onClosedListener != null) {
                         onClosedListener.onNetworkFailedListener();
                     }
-
                 }
             }
         });
@@ -189,7 +195,6 @@ public class InterstitialAdDefault extends AppCompatActivity {
             randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
         }
         display();
-
     }
 
     public boolean checkConnection() {
@@ -237,7 +242,6 @@ public class InterstitialAdDefault extends AppCompatActivity {
     }
 
     private void saveDataToServer(final boolean isClicked, final int adID) {
-
         if (isClicked) {
             new AppInterstitialDataSaveInBackground().execute(adID);
         }
@@ -264,9 +268,6 @@ public class InterstitialAdDefault extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (onClosedListener != null) {
-            onClosedListener.onCloseListener();
-        }
         finish();
     }
 
@@ -274,25 +275,18 @@ public class InterstitialAdDefault extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (onClosedListener != null) {
+            onClosedListener.onCloseListener();
             onClosedListener = null;
         }
-        interstitialModel = null;
     }
 
     class AppInterstitialDataSaveInBackground extends AsyncTask<Integer, Void, Void> {
-
         @Override
         protected Void doInBackground(Integer... integers) {
             int adid = integers[0];
             apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
             Key key = new Key();
-            Call<AdResponse> call = apiInterface.clickAd(adid,
-                    adUnitId,
-                    AppID.getAppId(),
-                    key.getApiKey(),
-                    interstitialModel.getAdEventId(),
-                    Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId(),
-                    differenceBetweenImpAndClick
+            Call<AdResponse> call = apiInterface.clickAd(adid, adUnitId, AppID.getAppId(), key.getApiKey(), interstitialModel.getAdEventId(), Utils.getAgentInfo(), AdFendoInterstitialAd.getAndroidId(), differenceBetweenImpAndClick
             );
             call.enqueue(new Callback<AdResponse>() {
                 @Override
@@ -308,19 +302,11 @@ public class InterstitialAdDefault extends AppCompatActivity {
                         }
                     }
                 }
-
                 @Override
                 public void onFailure(Call<AdResponse> call, Throwable t) {
                     Log.d(AdFendo.class.getSimpleName(), "" + t.getMessage());
-                    if (onClosedListener != null) {
-                        onClosedListener.onCloseListener();
-                    }
-                    finish();
                 }
             });
-
-
-
             return null;
         }
 

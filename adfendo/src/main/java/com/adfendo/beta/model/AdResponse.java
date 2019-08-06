@@ -6,7 +6,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class AdResponse {
 
-
     @SerializedName("int")
     @Expose
     private InterstitialModel interstitial;
@@ -14,7 +13,6 @@ public class AdResponse {
     @SerializedName("type")
     @Expose
     private String adType;
-
 
     @SerializedName("code")
     @Expose

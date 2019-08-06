@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -31,7 +32,7 @@ import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
 import com.adfendo.beta.interfaces.VideoAdListener;
 import com.adfendo.beta.model.AdResponse;
-import com.adfendo.beta.model.IpLocatoin;
+import com.adfendo.beta.model.IpLocation;
 import com.adfendo.beta.model.Video;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.ResponseCode;
@@ -63,7 +64,7 @@ public class VideoAd extends AppCompatActivity {
     public static List<String> listOfImages;
     ViewPager viewPager;
     Context context;
-    private IpLocatoin ipLocatoin;
+    private IpLocation ipLocation;
 
     public VideoAd(Context context, String uniteId) {
         this.context = context;
@@ -105,6 +106,8 @@ public class VideoAd extends AppCompatActivity {
     private long mLastClickTime = 0;
     private long clickedTime = 0;
     private long impressionTime = 0;
+    private int stopPosition;
+    private boolean isVideoFinished = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -118,6 +121,7 @@ public class VideoAd extends AppCompatActivity {
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
         setUpUI();
+        isVideoFinished = false;
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,7 +130,6 @@ public class VideoAd extends AppCompatActivity {
                 }
                 mLastClickTime = SystemClock.elapsedRealtime();
                 clickedTime = SystemClock.elapsedRealtime();
-
                 saveDataToServer(true, String.valueOf(video.getAdId()));
                 String[] appPackageName = video.getAppUrl().split("=");
                 try {
@@ -141,7 +144,7 @@ public class VideoAd extends AppCompatActivity {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (videoAdListener!=null){
+                if (videoAdListener != null) {
                     videoAdListener.onClosed();
                 }
                 finish();
@@ -193,12 +196,14 @@ public class VideoAd extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
                 remainingTime.setText(String.valueOf(millisUntilFinished / 1000));
             }
+
             public void onFinish() {
                 isShown = true;
                 remainingTime.setVisibility(View.GONE);
                 cancelButton.setVisibility(View.VISIBLE);
                 videoView.setVisibility(View.GONE);
                 viewPager.setVisibility(View.VISIBLE);
+                isVideoFinished = true;
             }
 
         }.start();
@@ -220,12 +225,15 @@ public class VideoAd extends AppCompatActivity {
                 Uri video = Uri.parse(link);
                 videoView.setMediaController(mediaController);
                 videoView.setVideoURI(video);
-                videoView.start();
+                videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    public void onPrepared(MediaPlayer mp) {
+                        videoView.start();
+                    }
+                });
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                 retriever.setDataSource(link, new HashMap<String, String>());
                 String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                 long timeInMillisec = Long.parseLong(time);
-                retriever.release();
 
                 startTimer(timeInMillisec);
             } catch (Exception e) {
@@ -242,7 +250,7 @@ public class VideoAd extends AppCompatActivity {
                     finish();
                 }
             });
-            if (video!=null) {
+            if (video != null) {
                 if (!video.getAppImage().equals("")) {
                     Glide.with(VideoAd.this).load(video.getAppImage()).into(appLogo);
                 }
@@ -272,6 +280,7 @@ public class VideoAd extends AppCompatActivity {
                 videoAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);
         }
     }
+
     public void requestAd() {
         if (checkConnection()) {
             if (Utils.location.equals(",")) {
@@ -285,6 +294,7 @@ public class VideoAd extends AppCompatActivity {
             }
         }
     }
+
     @SuppressLint("StaticFieldLeak")
     public class LoadAdInBackGround extends AsyncTask<Void, Void, Void> {
         @Override
@@ -307,7 +317,7 @@ public class VideoAd extends AppCompatActivity {
                                         listOfImages = new ArrayList<>();
                                         listOfImages.add(video.getIntAdImageLink1());
                                         listOfImages.add(video.getIntAdImageLink2());
-//                                        listOfImages.add(video.getIntAdImageLink3());
+                                        listOfImages.add(video.getIntAdImageLink3());
                                         setIsLoaded(true);
                                         if (videoAdListener != null) {
                                             videoAdListener.isLoaded(isLoaded());
@@ -365,12 +375,14 @@ public class VideoAd extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        if (videoAdListener != null)
-            videoAdListener.onClosed();
-        if (video != null)
-            video = null;
-        finish();
+        if (isVideoFinished) {
+            super.onBackPressed();
+            if (videoAdListener != null)
+                videoAdListener.onClosed();
+            if (video != null)
+                video = null;
+            finish();
+        }
     }
 
     @Override
@@ -430,7 +442,7 @@ public class VideoAd extends AppCompatActivity {
                 AdResponse adResponse = response.body();
                 if (isClicked) {
                     if (adResponse.getCode() == 200) {
-                        failedListener();
+                        Log.d(TAG, "onResponse: " + "impresion success");
                     }
                 }
                 failedListener();
@@ -486,24 +498,23 @@ public class VideoAd extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-            Call<IpLocatoin> call = apiInterface.getLocation();
-            call.enqueue(new Callback<IpLocatoin>() {
+            Call<IpLocation> call = apiInterface.getLocation();
+            call.enqueue(new Callback<IpLocation>() {
                 @Override
-                public void onResponse(Call<IpLocatoin> call, Response<IpLocatoin> response) {
-                    ipLocatoin = response.body();
-                    if (ipLocatoin != null) {
-                        if (!ipLocatoin.getCountryLong().isEmpty()) {
-                            Utils.location = ipLocatoin.getRegion() + "," + ipLocatoin.getCountryLong();
+                public void onResponse(Call<IpLocation> call, Response<IpLocation> response) {
+                    ipLocation = response.body();
+                    if (ipLocation != null) {
+                        if (!ipLocation.getCountryLong().isEmpty()) {
+                            Utils.location = ipLocation.getCity() + "," + ipLocation.getCountryLong();
                         }
                     } else {
                         Utils.location = ",";
                     }
-
                     requestAd();
                 }
 
                 @Override
-                public void onFailure(Call<IpLocatoin> call, Throwable t) {
+                public void onFailure(Call<IpLocation> call, Throwable t) {
                     Log.d(TAG, "onFailure: " + t.getMessage());
                 }
             });
@@ -517,6 +528,24 @@ public class VideoAd extends AppCompatActivity {
         if (videoAdListener != null) {
             videoAdListener.isLoaded(isLoaded);
             videoAdListener.onClosed();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (videoView.isPlaying()) {
+            stopPosition = videoView.getCurrentPosition(); //stopPosition is an int
+            videoView.pause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isVideoFinished) {
+            videoView.seekTo(stopPosition);
+            videoView.start();
         }
     }
 

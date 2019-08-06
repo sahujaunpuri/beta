@@ -9,7 +9,7 @@
         android:id="@+id/cancelButton"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_alignParentRight = "true"
+        android:layout_alignParentEnd = "true"
         android:layout_margin="8dp"
         android:background="@drawable/close" />
     <LinearLayout
@@ -73,7 +73,7 @@
                                 android:padding="5dp"
                                 android:singleLine="true"
                                 android:ellipsize="marquee"
-                                android:text="Palup - Dating, Chatting app"
+                                android:text=""
                                 android:textColor="@android:color/white"
                                 android:textSize="16sp" />
 
@@ -87,7 +87,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:padding="5dp"
-                                    android:text="4.6"
                                     android:textColor="@android:color/white"
                                     android:textSize="18sp" />
 
@@ -104,7 +103,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:ellipsize="end"
-                                    android:inputType="text"
                                     android:maxLines="1"
                                     android:padding="5dp"
                                     android:singleLine="true"
@@ -130,8 +128,6 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:maxLines="1"
-                        android:inputType="text"
-                        android:text="Chat with anyone "
                         android:textColor="@android:color/white" />
                     <TextView
                         android:id="@+id/text_view_offered_by"
@@ -142,8 +138,6 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:maxLines="1"
-                        android:inputType="text"
-                        android:text="Make friends and love"
                         android:textColor="@android:color/white" />
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -207,17 +201,14 @@
                         android:id="@+id/infoButton"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:layout_alignParentBottom="true"
                         android:layout_margin="4dp"
                         app:srcCompat="@drawable/info" />
                     <TextView
                         android:id="@+id/info_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignBottom="@+id/infoButton"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="6dp"
-                        android:layout_toRightOf="@+id/infoButton"
                         android:text="Ads By AdFendo"
                         android:textColor="@android:color/white"
                         android:visibility="visible" />

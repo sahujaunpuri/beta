@@ -122,7 +122,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:padding="5dp"
-                        android:text="Chat with anyone "
                         android:textColor="@android:color/white" />
 
                     <TextView
@@ -131,7 +130,6 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:padding="5dp"
-                        android:text="Make friends and love"
                         android:textColor="@android:color/white" />
 
                     <LinearLayout
@@ -159,7 +157,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:padding="2dp"
-                                android:text="Google"
                                 android:textColor="@android:color/white"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
@@ -205,10 +202,8 @@
                         android:id="@+id/info_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignBottom="@+id/infoButton"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="6dp"
-                        android:layout_toRightOf="@+id/infoButton"
                         android:text="Ads By AdFendo"
                         android:textColor="@android:color/white" />
                 </LinearLayout>

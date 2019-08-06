@@ -17,7 +17,7 @@ import com.adfendo.beta.interfaces.InterstitialAdListener;
 import com.adfendo.beta.model.AdResponse;
 import com.adfendo.beta.model.CustomInterstitialModel;
 import com.adfendo.beta.model.InterstitialModel;
-import com.adfendo.beta.model.IpLocatoin;
+import com.adfendo.beta.model.IpLocation;
 import com.adfendo.beta.model.WebInterstitialModel;
 import com.adfendo.beta.utilities.AppID;
 import com.adfendo.beta.utilities.Constants;
@@ -33,13 +33,13 @@ import retrofit2.Response;
 
 public class AdFendoInterstitialAd implements InterstitialAdDefault.InterstitialAdCloseListener, WebInterstitial.WebAdCloseListener, CustomInterstitialActivity.CustomAdClosedListener {
 
-    private static Context ctx;
+    private Context ctx;
     private String unitId;
     private boolean isLoaded = false;
     private static AdResponse adResponse;
-    private static InterstitialModel interstitialModel;
-    private static CustomInterstitialModel customInterstitialModel;
-    private static WebInterstitialModel webInterstitialModel;
+    private InterstitialModel interstitialModel;
+    private CustomInterstitialModel customInterstitialModel;
+    private WebInterstitialModel webInterstitialModel;
     private InterstitialAdListener interstitialAdListener;
     private String location = ",";
     private int eventId;
@@ -51,10 +51,10 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
     private static final String TAG = "AdFendoInterstitialAd";
     public static long impressionMillisecond = 0;
     private long clickedMillisecond;
-    public static  String ANDROID_ID = "";
+    public static String ANDROID_ID = "";
 
     public AdFendoInterstitialAd(Context context, String adUnitID) {
-        AdFendoInterstitialAd.ctx = context;
+        this.ctx = context;
         this.unitId = adUnitID;
         key = new Key();
         setAndroidID(context);
@@ -66,9 +66,10 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                 Settings.Secure.ANDROID_ID);
     }
 
-    public static String getAndroidId(){
+    public static String getAndroidId() {
         return ANDROID_ID;
     }
+
     public void setInterstitialAdListener(InterstitialAdListener interstitialAdListener) {
         this.interstitialAdListener = interstitialAdListener;
     }
@@ -77,7 +78,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
         if (!unitId.equals("")) {
             if (!AppID.getAppId().equals("")) {
                 if (checkConnection()) {
-                    if (location.equals(",")) {
+                    if (Utils.location.equals(",")) {
                         new LocationInBackground().execute();
                     } else {
                         requestForAd();
@@ -105,7 +106,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                 if (adResponse != null) {
                     switch (adResponse.getAdType()) {
                         case Constants.DEFAULT: {
-                            if (interstitialAdListener != null){
+                            if (interstitialAdListener != null) {
                                 defaultAd = new InterstitialAdDefault();
                                 defaultAd.setListener(AdFendoInterstitialAd.this);
                             }
@@ -187,22 +188,23 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
 
     @Override
     public void onCloseListener() {
-        if (interstitialAdListener != null){
+        if (interstitialAdListener != null) {
             interstitialAdListener.onClosed();
         }
     }
 
 
+
     @Override
     public void onCustomAdClosed() {
-        if (interstitialAdListener != null){
+        if (interstitialAdListener != null) {
             interstitialAdListener.onClosed();
         }
     }
 
     @Override
     public void onWebAdClosed() {
-        if (interstitialAdListener != null){
+        if (interstitialAdListener != null) {
             interstitialAdListener.onClosed();
         }
     }
@@ -217,21 +219,21 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
         @Override
         protected Void doInBackground(Void... voids) {
             ApiInterface apiInterface = ApiClient.getLocationClient().create(ApiInterface.class);
-            Call<IpLocatoin> call = apiInterface.getLocation();
-            call.enqueue(new Callback<IpLocatoin>() {
+            Call<IpLocation> call = apiInterface.getLocation();
+            call.enqueue(new Callback<IpLocation>() {
                 @Override
-                public void onResponse(Call<IpLocatoin> call, Response<IpLocatoin> response) {
-                    IpLocatoin ipLocatoin = response.body();
-                    if (ipLocatoin != null) {
-                        if (!ipLocatoin.getCountryLong().isEmpty()) {
-                            location = ipLocatoin.getRegion() + "," + ipLocatoin.getCountryLong();
+                public void onResponse(Call<IpLocation> call, Response<IpLocation> response) {
+                    IpLocation ipLocation = response.body();
+                    if (ipLocation != null) {
+                        if (!ipLocation.getCountryLong().isEmpty()) {
+                            location = ipLocation.getCity() + "," + ipLocation.getCountryLong();
                         }
                         requestForAd();
                     }
                 }
 
                 @Override
-                public void onFailure(Call<IpLocatoin> call, Throwable t) {
+                public void onFailure(Call<IpLocation> call, Throwable t) {
                     Log.d(TAG, "onFailure: " + t.getMessage());
                 }
             });
@@ -293,8 +295,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
         }
     }
 
-    class RequestInBackground extends AsyncTask<Void,Void,Void>{
-
+    class RequestInBackground extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
             ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -341,6 +342,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                         }
                     }
                 }
+
                 @Override
                 public void onFailure(Call<AdResponse> call, Throwable t) {
                     if (interstitialAdListener != null) {

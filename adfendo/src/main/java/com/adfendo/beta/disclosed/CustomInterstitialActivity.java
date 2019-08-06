@@ -73,7 +73,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_app_interstitial);
+        setContentView(R.layout.activity_custom_interstitial);
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
@@ -147,15 +147,14 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (onClosedListener != null) {
-            onClosedListener.onCustomAdClosed();
-        }
+        finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (onClosedListener != null) {
+            onClosedListener.onCustomAdClosed();
             onClosedListener = null;
         }
     }

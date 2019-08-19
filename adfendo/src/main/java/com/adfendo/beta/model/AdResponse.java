@@ -22,6 +22,27 @@ public class AdResponse {
     @Expose
     private String click;
 
+    @SerializedName("imp")
+    @Expose
+    private String impression;
+
+    @SerializedName("custom")
+    @Expose
+    private CustomInterstitialModel customInterstitialAd;
+
+    @SerializedName("web")
+    @Expose
+    private WebInterstitialModel webInterstitialModel;
+
+    @SerializedName("ban")
+    @Expose
+    private Banner bannerAd;
+
+    @SerializedName("video")
+    @Expose
+    private Video videoAd;
+
+
     public String getImpression() {
         return impression;
     }
@@ -29,11 +50,6 @@ public class AdResponse {
     public void setImpression(String impression) {
         this.impression = impression;
     }
-
-    @SerializedName("imp")
-    @Expose
-    private String impression;
-
 
     public int getCode() {
         return code;
@@ -75,23 +91,6 @@ public class AdResponse {
     public void setWebInterstitialModel(WebInterstitialModel webInterstitialModel) {
         this.webInterstitialModel = webInterstitialModel;
     }
-
-    @SerializedName("custom")
-    @Expose
-    private CustomInterstitialModel customInterstitialAd;
-
-    @SerializedName("web")
-    @Expose
-    private WebInterstitialModel webInterstitialModel;
-
-    @SerializedName("ban")
-    @Expose
-    private Banner bannerAd;
-
-
-    @SerializedName("video")
-    @Expose
-    private Video videoAd;
 
     public Video getVideoAd() {
         return videoAd;

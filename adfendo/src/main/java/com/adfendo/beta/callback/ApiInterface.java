@@ -50,8 +50,6 @@ public interface ApiInterface {
                                   @Field("ad_event_id") int adEventid,
                                   @Field("agent_info") String agentInfo,
                                   @Field("android_id") String androidId
-
-
     );
 
     @FormUrlEncoded

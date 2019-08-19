@@ -34,12 +34,15 @@
                 android:id="@+id/app_name_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:inputType="text"
                 android:padding="5dp"
-                android:singleLine="true"
                 android:textColor="@android:color/white"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit ="marquee_forever"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scrollHorizontally="true"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -141,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="6dp"
-                android:text="@string/ads_by_fendomob"
+                android:text="@string/ads_by_adFendo"
                 android:textColor="@android:color/white"
                 android:visibility="visible" />
         </LinearLayout>

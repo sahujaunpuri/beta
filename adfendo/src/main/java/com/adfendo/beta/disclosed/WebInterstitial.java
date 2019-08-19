@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.adfendo.beta.R;
@@ -31,7 +32,6 @@ import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,6 +45,8 @@ public class WebInterstitial extends AppCompatActivity {
     private long clickedTime;
     private boolean isClicked;
     private TextView description;
+    private LinearLayout infoLayout;
+    private ImageView callIcon;
 
     private static final String TAG = "WebInterstitial";
     long differenceBetweenImpAndClick;
@@ -77,6 +79,9 @@ public class WebInterstitial extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancelButton);
         visitButton = findViewById(R.id.visitButton);
         description = findViewById(R.id.description);
+        infoLayout = findViewById(R.id.info_layout);
+        callIcon = findViewById(R.id.call_icon);
+        callIcon.setVisibility(View.GONE);
 
         if (webInterstitialModel.getWebAdDescription() != null) {
             description.setVisibility(View.VISIBLE);
@@ -84,6 +89,9 @@ public class WebInterstitial extends AppCompatActivity {
         }
 
         visitButton.setText(webInterstitialModel.getWebButtonText());
+        if (webInterstitialModel.getWebButtonText().equalsIgnoreCase("Call Now")){
+            callIcon.setVisibility(View.VISIBLE);
+        }
         if (webInterstitialModel.getWebAdImageLink() != null)
             Glide.with(this).load(webInterstitialModel.getWebAdImageLink()).into(imageViewWeb);
         visitButton.setOnClickListener(new View.OnClickListener() {
@@ -92,8 +100,16 @@ public class WebInterstitial extends AppCompatActivity {
                 isClicked = true;
                 clickedTime = SystemClock.elapsedRealtime();
                 differenceBetweenImpAndClick = Math.abs(clickedTime - AdFendoInterstitialAd.impressionMillisecond) / 1000;
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInterstitialModel.getWebUrl()));
-                startActivity(browserIntent);
+                if (!webInterstitialModel.getWebUrl().equals("")){
+                    if (webInterstitialModel.getWebUrl().matches(".*\\d.*")){
+                        Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", webInterstitialModel.getWebUrl(), null));
+                        startActivity(callIntent);
+                    }else{
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInterstitialModel.getWebUrl()));
+                        startActivity(browserIntent);
+                    }
+                }
+
                 saveDataToServer(isClicked, webInterstitialModel.getAdId());
             }
         });
@@ -104,6 +120,13 @@ public class WebInterstitial extends AppCompatActivity {
                     webAdCloseListener.onWebAdClosed();
                 }
                 finish();
+            }
+        });
+        infoLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://beta2.adfendo.com"));
+                startActivity(browserIntent);
             }
         });
     }

@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     AdFendoInterstitialAd adFendoInterstitialAd;
     private static final String TAG = "Debug";
     Button interstitialButton;
-    Button videoButtno;
+    Button videoButton;
     VideoAd videoAd;
     BannerAd bannerAd;
 
@@ -26,64 +26,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         interstitialButton = findViewById(R.id.interstetial);
-        videoButtno = findViewById(R.id.video);
+        videoButton = findViewById(R.id.video);
         AdFendo.initialize("pub-app-200439590");
-        adFendoInterstitialAd = new AdFendoInterstitialAd(this, "pub-ad-unit-id-200439590~959492310");
-        adFendoInterstitialAd.setInterstitialAdListener(new InterstitialAdListener() {
-            @Override
-            public void onClosed() {
-                adFendoInterstitialAd.requestAd();
-            }
-            @Override
-            public void onFailedToLoad(int errorMessage) {
-                Toast.makeText(MainActivity.this, "onFailed " + errorMessage, Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void isLoaded(boolean isLoaded) {
-                Toast.makeText(MainActivity.this, "Interstitial isLoaded " + isLoaded, Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void onImpression() {
-                Toast.makeText(MainActivity.this, "onImpression called", Toast.LENGTH_SHORT).show();
-            }
 
-
-        });
-        adFendoInterstitialAd.requestAd();
-        interstitialButton.setOnClickListener(v -> {
-            if (adFendoInterstitialAd.isLoaded()) {
-                adFendoInterstitialAd.showAd();
-            }
-        });
-        videoAd = new VideoAd(this, "pub-ad-unit-id-200439590~326159499");
-        videoAd.setVideoAdListener(new VideoAdListener() {
-            @Override
-            public void onTimeCount(int miliSeconds) {
-            }
-
-            @Override
-            public void onClosed() {
-                videoAd.requestAd();
-            }
-            @Override
-            public void onFailedToLoad(int errorCode) {
-                Toast.makeText(MainActivity.this, "Video Error"+errorCode, Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void isLoaded(boolean isLoaded) {
-                Toast.makeText(MainActivity.this, "Video loaded :"+isLoaded, Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void onImpression() {
-                Toast.makeText(MainActivity.this, "VGideo im", Toast.LENGTH_SHORT).show();
-            }
-        });
-        videoAd.requestAd();
-        videoButtno.setOnClickListener(view -> {
-            if (videoAd.isLoaded()){
-                videoAd.showVideoAd();
-            }
-        });
         bannerAd = findViewById(R.id.banner);
         BannerAd banner= new BannerAd(this,"pub-ad-unit-id-200439590~756146633");
         banner.setOnBannerAdListener(new BannerAdListener() {
@@ -112,6 +57,72 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+
+        adFendoInterstitialAd = new AdFendoInterstitialAd(this, "pub-ad-unit-id-200439590~959492310");
+        adFendoInterstitialAd.setInterstitialAdListener(new InterstitialAdListener() {
+            @Override
+            public void onClosed() {
+                adFendoInterstitialAd.requestAd();
+                Toast.makeText(MainActivity.this, "onClosed", Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onFailedToLoad(int errorMessage) {
+                Toast.makeText(MainActivity.this, "onFailed " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void isLoaded(boolean isLoaded) {
+                Toast.makeText(MainActivity.this, "Interstitial isLoaded " + isLoaded, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onImpression() {
+                Toast.makeText(MainActivity.this, "onImpression called", Toast.LENGTH_SHORT).show();
+            }
+
+
+        });
+        adFendoInterstitialAd.requestAd();
+        interstitialButton.setOnClickListener(v -> {
+            if (adFendoInterstitialAd.isLoaded()) {
+                adFendoInterstitialAd.showAd();
+            }else {
+                adFendoInterstitialAd.requestAd();
+            }
+        });
+
+
+        videoAd = new VideoAd(this, "pub-ad-unit-id-200439590~326159499");
+        videoAd.setVideoAdListener(new VideoAdListener() {
+            @Override
+            public void onTimeCount(int miliSeconds) {
+            }
+
+            @Override
+            public void onClosed() {
+                videoAd.requestAd();
+            }
+            @Override
+            public void onFailedToLoad(int errorCode) {
+                Toast.makeText(MainActivity.this, "Video Error"+errorCode, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void isLoaded(boolean isLoaded) {
+                Toast.makeText(MainActivity.this, "Video loaded :"+isLoaded, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onImpression() {
+                Toast.makeText(MainActivity.this, "Video onImpression", Toast.LENGTH_SHORT).show();
+            }
+        });
+        videoAd.requestAd();
+        videoButton.setOnClickListener(view -> {
+            if (videoAd.isLoaded()){
+                videoAd.showVideoAd();
+            }
+        });
+
+
 
     }
 }

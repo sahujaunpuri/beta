@@ -52,7 +52,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
     private static final String TAG = "InterstitialModel";
     InterstitialAdListener interstitialAdListener;
     ApiInterface apiInterface;
-    private String isIsImpressionSuccessfull = "";
+    private String isImpressionSuccessfull = "";
     private static InterstitialModel interstitialModel;
     private static List<String> listOfImages;
     ViewPager viewPager;
@@ -125,20 +125,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
         listOfImages.add(interstitialModel.getIntAdImageLink2());
         listOfImages.add(interstitialModel.getIntAdImageLink3());
 
-        descripotionOne = findViewById(R.id.description_one);
-        infoButton = findViewById(R.id.infoButton);
-        androidColors = getResources().getIntArray(R.array.androidcolors);
-        actionButton = findViewById(R.id.install_button);
-        cancelButton = findViewById(R.id.cancelButton);
-        viewPager = findViewById(R.id.view_pager);
-        appLogo = findViewById(R.id.app_logo);
-        textViewAppName = findViewById(R.id.app_name_text_view);
-        textViewRating = findViewById(R.id.text_view_rating_in_point);
-        textViewOfferedBy = findViewById(R.id.text_view_offered_by);
-        textViewStatusOfApp = findViewById(R.id.text_view_free_or_paid);
-        textViewTotalReview = findViewById(R.id.text_view_total_review);
-        background = findViewById(R.id.ad_details_background);
-        infoTextView = findViewById(R.id.info_text);
+        initView();
 
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,8 +141,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
 
                     String[] appPackageName = interstitialModel.getAppUrl().split("=");
                     try {
-                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("market://details?id=" + appPackageName[1])));
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName[1])));
                     } catch (android.content.ActivityNotFoundException anfe) {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(interstitialModel.getAppUrl())));
                     }
@@ -197,6 +183,23 @@ public class InterstitialAdDefault extends AppCompatActivity {
         display();
     }
 
+    private void initView() {
+        descripotionOne = findViewById(R.id.description_one);
+        infoButton = findViewById(R.id.infoButton);
+        androidColors = getResources().getIntArray(R.array.androidcolors);
+        actionButton = findViewById(R.id.install_button);
+        cancelButton = findViewById(R.id.cancelButton);
+        viewPager = findViewById(R.id.view_pager);
+        appLogo = findViewById(R.id.app_logo);
+        textViewAppName = findViewById(R.id.app_name_text_view);
+        textViewRating = findViewById(R.id.text_view_rating_in_point);
+        textViewOfferedBy = findViewById(R.id.text_view_offered_by);
+        textViewStatusOfApp = findViewById(R.id.text_view_free_or_paid);
+        textViewTotalReview = findViewById(R.id.text_view_total_review);
+        background = findViewById(R.id.ad_details_background);
+        infoTextView = findViewById(R.id.info_text);
+    }
+
     public boolean checkConnection() {
         Runtime runtime = Runtime.getRuntime();
         try {
@@ -222,13 +225,14 @@ public class InterstitialAdDefault extends AppCompatActivity {
             Glide.with(this).load(interstitialModel.getAppImage()).into(appLogo);
         }
         textViewAppName.setText(interstitialModel.getAppName());
+        textViewAppName.setSelected(true);
         textViewRating.setText(String.valueOf(interstitialModel.getAppRating()));
         textViewOfferedBy.setText(String.valueOf(interstitialModel.getIntAdDescription1()));
         textViewStatusOfApp.setText(String.valueOf(interstitialModel.getAppStatus()));
         review = Long.valueOf(interstitialModel.getAppReview().replaceAll(",", ""));
         textViewTotalReview.setText(Utils.getRoughNumber(review));
         actionButton.setText(interstitialModel.getAppButtonText());
-        isIsImpressionSuccessfull = "1";
+        isImpressionSuccessfull = "1";
         descripotionOne.setText(interstitialModel.getIntAdDescription());
         Timer timeTasker = new Timer();
         timeTasker.scheduleAtFixedRate(new TimeTasker(), 2000, 3000);
@@ -292,7 +296,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<AdResponse> call, Response<AdResponse> response) {
                     AdResponse adResponse = response.body();
-                    if (isClicked) {
+
                         if (adResponse.getCode() == ResponseCode.VALID_RESPONSE) {
                             Log.d(TAG, "onResponse: " + ResponseCode.VALID_RESPONSE);
                         } else if (adResponse.getCode() == ResponseCode.FRAUD_CLICK) {
@@ -300,7 +304,7 @@ public class InterstitialAdDefault extends AppCompatActivity {
                         } else if (adResponse.getCode() == ResponseCode.CLICK_ERROR) {
                             Log.d(TAG, "onResponse: " + ResponseCode.CLICK_ERROR);
                         }
-                    }
+
                 }
                 @Override
                 public void onFailure(Call<AdResponse> call, Throwable t) {

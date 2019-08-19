@@ -71,7 +71,6 @@ public class BannerAd extends LinearLayout {
     TextView textViewFreeOrPaid;
     TextView textViewStar;
     Button installButton;
-    String location = "";
     long review = 0;
     LinearLayout containerLayout;
     public static Banner bannerAd;
@@ -81,8 +80,6 @@ public class BannerAd extends LinearLayout {
     boolean loadAd = false;
     private long mLastClickTime = 0;
     private long impressionTime = 0;
-    private long clickedTime = 0;
-
 
     public BannerAd(Context context, String adUnitId) {
         super(context);
@@ -111,14 +108,8 @@ public class BannerAd extends LinearLayout {
     private void init(final Context context, @Nullable AttributeSet attrs, @Nullable int defStyle) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(R.layout.banner_layout, this, true);
-        imageView = view.findViewById(R.id.app_logo);
-        installButton = view.findViewById(R.id.install_button);
-        appName = view.findViewById(R.id.app_name_text_view);
-        textViewRatingPoint = view.findViewById(R.id.text_view_rating_in_point);
-        textViewTotalReview = view.findViewById(R.id.text_view_total_review);
-        textViewFreeOrPaid = view.findViewById(R.id.text_view_free_or_paid);
-        textViewStar = view.findViewById(R.id.text_view_star);
-        containerLayout = view.findViewById(R.id.container);
+
+        initView(view);
 
         mHeight = (Resources.getSystem().getDisplayMetrics().heightPixels * 15) / 100;
         mWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
@@ -155,14 +146,25 @@ public class BannerAd extends LinearLayout {
         view.setLayoutParams(new LinearLayout.LayoutParams(mWidth, mHeight));
     }
 
+    private void initView(View view) {
+        imageView = view.findViewById(R.id.app_logo);
+        installButton = view.findViewById(R.id.install_button);
+        appName = view.findViewById(R.id.app_name_text_view);
+        textViewRatingPoint = view.findViewById(R.id.text_view_rating_in_point);
+        textViewTotalReview = view.findViewById(R.id.text_view_total_review);
+        textViewFreeOrPaid = view.findViewById(R.id.text_view_free_or_paid);
+        textViewStar = view.findViewById(R.id.text_view_star);
+        containerLayout = view.findViewById(R.id.container);
+    }
+
     private static boolean isLoaded = false;
-    private String isIsImpressionSuccessfull = "";
+    private String isImpressionSuccessful = "";
 
     @SuppressLint("StaticFieldLeak")
-    private class ImpressionInBaground extends AsyncTask<Void, Void, Void> {
+    private class ImpressionInBackground extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            if (isIsImpressionSuccessfull.equals("1")) {
+            if (isImpressionSuccessful.equals("1")) {
                 apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                 Key key = new Key();
                 String appId = AppID.getAppId();
@@ -253,8 +255,8 @@ public class BannerAd extends LinearLayout {
                             containerLayout.setVisibility(View.VISIBLE);
                             setIsLoaded(true);
                             bannerAdListener.isLoaded(isLoaded());
-                            isIsImpressionSuccessfull = "1";
-                            new ImpressionInBaground().execute();
+                            isImpressionSuccessful = "1";
+                            new ImpressionInBackground().execute();
                         }
                         if (bannerAdListener != null){
 

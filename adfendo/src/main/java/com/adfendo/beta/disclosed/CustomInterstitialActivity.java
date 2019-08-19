@@ -134,6 +134,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
         actionButton.setText(customInterstitialAd.getAppButtonText());
         Glide.with(this).load(customInterstitialAd.getAppImage()).into(appLogo);
         textViewAppName.setText(customInterstitialAd.getAppName());
+        textViewAppName.setSelected(true);
         textViewRating.setText(customInterstitialAd.getAppRating());
         textViewTotalReview.setText(customInterstitialAd.getAppReview());
     }

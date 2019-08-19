@@ -108,7 +108,7 @@ public class VideoAd extends AppCompatActivity {
     private long impressionTime = 0;
     private int stopPosition;
     private boolean isVideoFinished = false;
-
+    MediaController mediaController;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -219,15 +219,16 @@ public class VideoAd extends AppCompatActivity {
             try {
                 String link = video.getVideoLink();
                 videoView = (VideoView) findViewById(R.id.video);
-                MediaController mediaController = new MediaController(this);
+                 mediaController = new MediaController(this);
                 mediaController.setVisibility(View.GONE);
                 mediaController.setAnchorView(videoView);
-                Uri video = Uri.parse(link);
+                final Uri video = Uri.parse(link);
                 videoView.setMediaController(mediaController);
                 videoView.setVideoURI(video);
                 videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     public void onPrepared(MediaPlayer mp) {
                         videoView.start();
+
                     }
                 });
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
@@ -536,7 +537,9 @@ public class VideoAd extends AppCompatActivity {
         super.onPause();
         if (videoView.isPlaying()) {
             stopPosition = videoView.getCurrentPosition(); //stopPosition is an int
-            videoView.pause();
+            //videoView.pause();
+
+            videoView.stopPlayback();
         }
     }
 

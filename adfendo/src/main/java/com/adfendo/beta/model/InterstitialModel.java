@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class InterstitialModel implements Parcelable {
+public class InterstitialModel implements Parcelable{
 
     @SerializedName("ad_id")
     @Expose
@@ -18,7 +18,6 @@ public class InterstitialModel implements Parcelable {
     @SerializedName("app_name")
     @Expose
     private String appName;
-
 
     @SerializedName("ad_type")
     @Expose
@@ -81,32 +80,6 @@ public class InterstitialModel implements Parcelable {
         appStatus = in.readString();
         appButtonText = in.readString();
         adEventId = in.readInt();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(adId);
-        dest.writeString(intAdTitle);
-        dest.writeString(appName);
-        dest.writeString(adType);
-        dest.writeString(appImage);
-        dest.writeString(intAdDescription);
-        dest.writeString(intAdDescription1);
-        dest.writeString(intAdImageLink);
-        dest.writeString(intAdImageLink1);
-        dest.writeString(intAdImageLink2);
-        dest.writeString(intAdImageLink3);
-        dest.writeString(appUrl);
-        dest.writeString(appRating);
-        dest.writeString(appReview);
-        dest.writeString(appStatus);
-        dest.writeString(appButtonText);
-        dest.writeInt(adEventId);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public static final Creator<InterstitialModel> CREATOR = new Creator<InterstitialModel>() {
@@ -255,5 +228,31 @@ public class InterstitialModel implements Parcelable {
 
     public void setAdEventId(int adEventId) {
         this.adEventId = adEventId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(adId);
+        parcel.writeString(intAdTitle);
+        parcel.writeString(appName);
+        parcel.writeString(adType);
+        parcel.writeString(appImage);
+        parcel.writeString(intAdDescription);
+        parcel.writeString(intAdDescription1);
+        parcel.writeString(intAdImageLink);
+        parcel.writeString(intAdImageLink1);
+        parcel.writeString(intAdImageLink2);
+        parcel.writeString(intAdImageLink3);
+        parcel.writeString(appUrl);
+        parcel.writeString(appRating);
+        parcel.writeString(appReview);
+        parcel.writeString(appStatus);
+        parcel.writeString(appButtonText);
+        parcel.writeInt(adEventId);
     }
 }

@@ -77,7 +77,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
     public void requestAd() {
         if (!unitId.equals("")) {
             if (!AppID.getAppId().equals("")) {
-                if (checkConnection()) {
+                if (checkInternetConnection()) {
                     if (Utils.location.equals(",")) {
                         new LocationInBackground().execute();
                     } else {
@@ -101,7 +101,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
     }
 
     public void showAd() {
-        if (checkConnection()) {
+        if (checkInternetConnection()) {
             if (isLoaded) {
                 if (adResponse != null) {
                     switch (adResponse.getAdType()) {
@@ -110,7 +110,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                                 defaultAd = new InterstitialAdDefault();
                                 defaultAd.setListener(AdFendoInterstitialAd.this);
                             }
-                            interstitialModel = adResponse.getInterstitial();
+                            interstitialModel = adResponse.getInterstitial();//check again whether the object is null or assigned
                             Intent intent = new Intent(ctx, InterstitialAdDefault.class);
                             intent.putExtra(Constants.AD_UNIT_IT, unitId);
                             intent.putExtra(Constants.AD_INTERSTITIAL, interstitialModel);
@@ -134,7 +134,6 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
                             break;
                         }
                         case Constants.WEB: {
-                            //todo web ad interstitial
                             if (interstitialAdListener != null) {
                                 webInterstitial = new WebInterstitial();
                                 webInterstitial.setListener(AdFendoInterstitialAd.this);
@@ -171,7 +170,7 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
         return isLoaded;
     }
 
-    private boolean checkConnection() {
+    private boolean checkInternetConnection() {
         Runtime runtime = Runtime.getRuntime();
         try {
             Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
@@ -192,23 +191,18 @@ public class AdFendoInterstitialAd implements InterstitialAdDefault.Interstitial
             interstitialAdListener.onClosed();
         }
     }
-
-
-
     @Override
     public void onCustomAdClosed() {
         if (interstitialAdListener != null) {
             interstitialAdListener.onClosed();
         }
     }
-
     @Override
     public void onWebAdClosed() {
         if (interstitialAdListener != null) {
             interstitialAdListener.onClosed();
         }
     }
-
     @Override
     public void onNetworkFailedListener() {
         interstitialAdListener.onFailedToLoad(ResponseCode.ERROR_IN_NETWORK_CONNECTION);

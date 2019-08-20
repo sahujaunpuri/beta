@@ -170,7 +170,8 @@
                             android:layout_height="32dp"
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="8dp"
-                            app:srcCompat="@drawable/google_play_icon" />
+                            app:srcCompat="@drawable/google_play_icon"
+                             />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -218,8 +219,8 @@
 
                     <ImageView
                         android:id="@+id/infoButton"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:layout_alignParentBottom="true"
                         android:layout_margin="4dp"
                         app:srcCompat="@drawable/info" />

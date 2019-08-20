@@ -1,6 +1,7 @@
 package com.adfendo.beta.ads;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
@@ -18,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -109,6 +111,13 @@ public class VideoAd extends AppCompatActivity {
     private int stopPosition;
     private boolean isVideoFinished = false;
     MediaController mediaController;
+    private int mCurrentPosition = 0;
+    private static final String PLAYBACK_TIME = "play_time";
+    private static final String REM_TIME = "rem_time";
+    private CountDownTimer countDownTimer;
+    private long remainingTimeCount = 0;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,12 +171,29 @@ public class VideoAd extends AppCompatActivity {
                 }
             }
         });
+        infoTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.adfendo_url)));
+                startActivity(browserIntent);
+            }
+        });
         if (savedInstanceState != null) {
             background.setBackgroundColor(randomAndroidColor);
+            mCurrentPosition = savedInstanceState.getInt(PLAYBACK_TIME);
+            remainingTimeCount = savedInstanceState.getLong(REM_TIME);
+            Log.e(TAG, "remTime: " + mCurrentPosition );
         } else {
             randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
         }
+
+        MediaController controller = new MediaController(this);
+        controller.setMediaPlayer(videoView);
+        videoView.setMediaController(controller);
+
         display();
+
+
     }
 
     private void setUpUI() {
@@ -188,13 +214,15 @@ public class VideoAd extends AppCompatActivity {
         infoTextView = findViewById(R.id.info_text);
         progressBar = findViewById(R.id.progress_circular);
         remainingTime = findViewById(R.id.remaining_time_text_view);
+        videoView = (VideoView) findViewById(R.id.video);
     }
 
     private void startTimer(final long miliseconds) {
         remainingTime.setVisibility(View.VISIBLE);
-        new CountDownTimer(miliseconds, 1000) {
+        countDownTimer = new CountDownTimer(miliseconds, 1000) {
             public void onTick(long millisUntilFinished) {
                 remainingTime.setText(String.valueOf(millisUntilFinished / 1000));
+                remainingTimeCount = millisUntilFinished;
             }
 
             public void onFinish() {
@@ -218,8 +246,8 @@ public class VideoAd extends AppCompatActivity {
             viewPager.setAdapter(adapter);
             try {
                 String link = video.getVideoLink();
-                videoView = (VideoView) findViewById(R.id.video);
-                 mediaController = new MediaController(this);
+                initializePlayer();
+                /*mediaController = new MediaController(this);
                 mediaController.setVisibility(View.GONE);
                 mediaController.setAnchorView(videoView);
                 final Uri video = Uri.parse(link);
@@ -228,15 +256,14 @@ public class VideoAd extends AppCompatActivity {
                 videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     public void onPrepared(MediaPlayer mp) {
                         videoView.start();
-
                     }
-                });
+                });*/
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                 retriever.setDataSource(link, new HashMap<String, String>());
                 String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                 long timeInMillisec = Long.parseLong(time);
 
-                startTimer(timeInMillisec);
+                //startTimer(timeInMillisec);
             } catch (Exception e) {
                 // TODO: handle exception
                 Log.d(TAG, e.getMessage());
@@ -272,6 +299,56 @@ public class VideoAd extends AppCompatActivity {
         impressionCall();
     }
 
+    private void initializePlayer() {
+        try {
+            String link = video.getVideoLink();
+            Uri videoUri = getMedia(link);
+            videoView.setVideoURI(videoUri);
+
+            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+
+                    if (mCurrentPosition > 0) {
+                        videoView.seekTo(mCurrentPosition);
+                        Log.e(TAG, "current: " + mCurrentPosition);
+                    } else {
+                        // Skipping to 1 shows the first frame of the video.
+                        videoView.seekTo(1);
+                    }
+                    startTimer(videoView.getDuration());
+                    videoView.start();
+
+                }
+            });
+
+            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    //videoView.seekTo(mCurrentPosition);
+                    videoView.stopPlayback();
+                    isShown = true;
+                     
+                }
+            });
+
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    private Uri getMedia(String link) {
+        if (URLUtil.isValidUrl(link)) {
+            // Media name is an external URL.
+            return Uri.parse(link);
+        } else {
+            // Media name is a raw resource embedded in the app.
+            return Uri.parse("android.resource://" + getPackageName() +
+                    "/raw/" + link);
+        }
+    }
+
     public void showVideoAd() {
         if (checkConnection()) {
             Intent intent = new Intent(this.context, VideoAd.class);
@@ -295,6 +372,7 @@ public class VideoAd extends AppCompatActivity {
             }
         }
     }
+
 
     @SuppressLint("StaticFieldLeak")
     public class LoadAdInBackGround extends AsyncTask<Void, Void, Void> {
@@ -535,21 +613,53 @@ public class VideoAd extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (videoView.isPlaying()) {
+        /*if (videoView.isPlaying()) {
             stopPosition = videoView.getCurrentPosition(); //stopPosition is an int
-            //videoView.pause();
-
+            videoView.pause();
             videoView.stopPlayback();
+        }*/
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            mCurrentPosition = videoView.getCurrentPosition();
+            videoView.pause();
+           // countDownTimer.cancel();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initializePlayer();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isVideoFinished) {
+        /*if (isVideoFinished) {
             videoView.seekTo(stopPosition);
             videoView.start();
-        }
+        }*/
+        initializePlayer();
+        //startTimer(remainingTimeCount);
+        Log.e(TAG, "onResume: " + remainingTimeCount);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(PLAYBACK_TIME, videoView.getCurrentPosition());
+        Log.e(TAG, "rem: " + remainingTimeCount);
+        outState.putLong(REM_TIME, remainingTimeCount);
     }
 
 }

@@ -2,6 +2,7 @@ package com.adfendo.beta.disclosed;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -46,7 +47,6 @@ public class WebInterstitial extends AppCompatActivity {
     private boolean isClicked;
     private TextView description;
     private LinearLayout infoLayout;
-    private ImageView callIcon;
 
     private static final String TAG = "WebInterstitial";
     long differenceBetweenImpAndClick;
@@ -80,8 +80,7 @@ public class WebInterstitial extends AppCompatActivity {
         visitButton = findViewById(R.id.visitButton);
         description = findViewById(R.id.description);
         infoLayout = findViewById(R.id.info_layout);
-        callIcon = findViewById(R.id.call_icon);
-        callIcon.setVisibility(View.GONE);
+
 
         if (webInterstitialModel.getWebAdDescription() != null) {
             description.setVisibility(View.VISIBLE);
@@ -90,7 +89,9 @@ public class WebInterstitial extends AppCompatActivity {
 
         visitButton.setText(webInterstitialModel.getWebButtonText());
         if (webInterstitialModel.getWebButtonText().equalsIgnoreCase("Call Now")){
-            callIcon.setVisibility(View.VISIBLE);
+            Drawable callIcon = this.getResources().getDrawable( R.drawable.ic_call);
+            callIcon.setBounds(0,0,60,60);
+            visitButton.setCompoundDrawables(callIcon, null, null, null);
         }
         if (webInterstitialModel.getWebAdImageLink() != null)
             Glide.with(this).load(webInterstitialModel.getWebAdImageLink()).into(imageViewWeb);
@@ -125,7 +126,7 @@ public class WebInterstitial extends AppCompatActivity {
         infoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://beta2.adfendo.com"));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.adfendo_url)));
                 startActivity(browserIntent);
             }
         });

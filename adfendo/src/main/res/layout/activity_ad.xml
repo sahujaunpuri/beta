@@ -73,15 +73,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:padding="5dp"
-                                android:text=""
                                 android:textColor="@android:color/white"
-                                android:textSize="16sp"
+                                android:textSize="18sp"
                                 android:singleLine="true"
                                 android:ellipsize="marquee"
-                                android:marqueeRepeatLimit ="marquee_forever"
+                                android:marqueeRepeatLimit="marquee_forever"
                                 android:focusable="true"
                                 android:focusableInTouchMode="true"
-                                android:scrollHorizontally="true"/>
+                                android:scrollHorizontally="true" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -94,7 +93,7 @@
                                     android:layout_height="wrap_content"
                                     android:padding="5dp"
                                     android:textColor="@android:color/white"
-                                    android:textSize="18sp" />
+                                    android:textSize="16sp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -102,7 +101,7 @@
                                     android:padding="5dp"
                                     android:text=" ★"
                                     android:textColor="@android:color/white"
-                                    android:textSize="18sp" />
+                                    android:textSize="16sp" />
 
                                 <TextView
                                     android:id="@+id/text_view_total_review"
@@ -113,7 +112,7 @@
                                     android:padding="5dp"
                                     android:singleLine="true"
                                     android:textColor="@android:color/white"
-                                    android:textSize="18sp" />
+                                    android:textSize="16sp" />
 
                                 <TextView
                                     android:id="@+id/text_view_free_or_paid"
@@ -121,7 +120,7 @@
                                     android:layout_height="wrap_content"
                                     android:padding="5dp"
                                     android:textColor="@android:color/white"
-                                    android:textSize="18sp" />
+                                    android:textSize="16sp" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -209,8 +208,8 @@
 
                     <ImageView
                         android:id="@+id/infoButton"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:layout_margin="4dp"
                         app:srcCompat="@drawable/info" />
 
@@ -220,7 +219,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="6dp"
-                        android:text="Ads By AdFendo"
+                        android:text="@string/ads_by_adFendo"
                         android:textColor="@android:color/white"
                         android:visibility="visible" />
                 </LinearLayout>

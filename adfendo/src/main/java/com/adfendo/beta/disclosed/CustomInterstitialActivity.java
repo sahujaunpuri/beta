@@ -48,6 +48,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
     private Button actionButton;
     private Button cancelButton;
     private LinearLayout imageContainer;
+    private LinearLayout info_layout;
 
     private Utils utils;
     private AdResponse adResponse;
@@ -95,6 +96,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
         textViewRating = findViewById(R.id.text_view_rating_in_point);
         textViewTotalReview = findViewById(R.id.text_view_total_review);
         textViewStatusOfApp = findViewById(R.id.text_view_free_or_paid);
+        info_layout = findViewById(R.id.info_layout);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,6 +123,13 @@ public class CustomInterstitialActivity extends AppCompatActivity {
                     onClosedListener.onCustomAdClosed();
                 }
                 finish();
+            }
+        });
+        info_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.adfendo_url)));
+                startActivity(browserIntent);
             }
         });
         if (checkConnection()) {

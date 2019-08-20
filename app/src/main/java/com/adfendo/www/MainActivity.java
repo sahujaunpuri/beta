@@ -2,6 +2,7 @@ package com.adfendo.www;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -15,7 +16,7 @@ import com.adfendo.beta.interfaces.VideoAdListener;
 
 public class MainActivity extends AppCompatActivity {
     AdFendoInterstitialAd adFendoInterstitialAd;
-    private static final String TAG = "Debug";
+    private static final String TAG = "MainActivity";
     Button interstitialButton;
     Button videoButton;
     VideoAd videoAd;
@@ -65,19 +66,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClosed() {
                 adFendoInterstitialAd.requestAd();
-                Toast.makeText(MainActivity.this, "onClosed", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(MainActivity.this, "onClosed", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onFailedToLoad(int errorMessage) {
-                Toast.makeText(MainActivity.this, "onFailed " + errorMessage, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(MainActivity.this, "onFailed " + errorMessage, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void isLoaded(boolean isLoaded) {
-                Toast.makeText(MainActivity.this, "Interstitial isLoaded " + isLoaded, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Interstitial isLoaded " + isLoaded, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onImpression() {
-                Toast.makeText(MainActivity.this, "onImpression called", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "onImpression called", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -104,15 +105,15 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onFailedToLoad(int errorCode) {
-                Toast.makeText(MainActivity.this, "Video Error"+errorCode, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Video Error"+errorCode, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void isLoaded(boolean isLoaded) {
-                Toast.makeText(MainActivity.this, "Video loaded :"+isLoaded, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Video loaded :"+isLoaded, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onImpression() {
-                Toast.makeText(MainActivity.this, "Video onImpression", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Video onImpression", Toast.LENGTH_SHORT).show();
             }
         });
         videoAd.requestAd();
@@ -121,8 +122,25 @@ public class MainActivity extends AppCompatActivity {
                 videoAd.showVideoAd();
             }
         });
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 }

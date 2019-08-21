@@ -24,32 +24,34 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true" />
+
             <Button
                 android:id="@+id/cancelButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_alignParentRight="true"
                 android:layout_gravity="right"
                 android:layout_margin="8dp"
-                android:layout_alignParentRight="true"
                 android:background="@drawable/close"
                 android:visibility="gone"
 
                 />
+
             <TextView
                 android:id="@+id/remaining_time_text_view"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:textColor="@color/black"
                 android:layout_alignParentRight="true"
                 android:layout_margin="8dp"
+                android:background="@drawable/button_background"
                 android:gravity="center"
-                android:background="@drawable/button_background"/>
+                android:textColor="@color/black" />
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"/>
+                android:visibility="gone" />
         </RelativeLayout>
 
         <LinearLayout
@@ -78,8 +80,7 @@
                             android:id="@+id/app_logo_video"
                             android:layout_width="72dp"
                             android:layout_height="72dp"
-                            android:background="@drawable/logo_image_bg"
-                            />
+                            android:background="@drawable/logo_image_bg" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -91,11 +92,16 @@
                                 android:id="@+id/app_name_text_view"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:maxLines="1"
+                                android:ellipsize="marquee"
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
+                                android:marqueeRepeatLimit="marquee_forever"
                                 android:padding="5dp"
-                                android:text="Palup - Dating, Chatting app"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"
                                 android:textColor="@android:color/white"
-                                android:textSize="16sp" />
+                                android:textSize="18sp" />
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -108,7 +114,7 @@
                                     android:padding="5dp"
                                     android:text="4.6"
                                     android:textColor="@android:color/white"
-                                    android:textSize="18sp" />
+                                    android:textSize="16sp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -116,7 +122,7 @@
                                     android:padding="5dp"
                                     android:text=" ★"
                                     android:textColor="@android:color/white"
-                                    android:textSize="18sp" />
+                                    android:textSize="16sp" />
 
                                 <TextView
                                     android:id="@+id/text_view_total_review"
@@ -124,7 +130,7 @@
                                     android:layout_height="wrap_content"
                                     android:padding="5dp"
                                     android:textColor="@android:color/white"
-                                    android:textSize="18sp" />
+                                    android:textSize="16sp" />
 
                                 <TextView
                                     android:id="@+id/text_view_free_or_paid"
@@ -132,7 +138,7 @@
                                     android:layout_height="wrap_content"
                                     android:padding="5dp"
                                     android:textColor="@android:color/white"
-                                    android:textSize="18sp" />
+                                    android:textSize="16sp" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -144,8 +150,8 @@
                         android:layout_gravity="center_horizontal"
                         android:maxLines="1"
                         android:padding="5dp"
-                        android:text="Chat with anyone "
-                        android:textColor="@android:color/white" />
+                        android:textColor="@android:color/white"
+                        android:textSize="17sp" />
 
                     <TextView
                         android:id="@+id/text_view_offered_by"
@@ -154,8 +160,8 @@
                         android:layout_gravity="center_horizontal"
                         android:maxLines="1"
                         android:padding="5dp"
-                        android:text="Make friends and love"
-                        android:textColor="@android:color/white" />
+                        android:textColor="@android:color/white"
+                        android:textSize="17sp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -170,8 +176,7 @@
                             android:layout_height="32dp"
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="8dp"
-                            app:srcCompat="@drawable/google_play_icon"
-                             />
+                            app:srcCompat="@drawable/google_play_icon" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -233,7 +238,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="6dp"
                         android:layout_toRightOf="@+id/infoButton"
-                        android:text="Ads By AdFendo"
+                        android:text="@string/ads_by_adFendo"
                         android:textColor="@android:color/white"
                         android:visibility="visible" />
                 </LinearLayout>

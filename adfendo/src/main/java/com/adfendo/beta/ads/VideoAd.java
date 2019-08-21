@@ -1,17 +1,14 @@
 package com.adfendo.beta.ads;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -45,7 +42,6 @@ import com.bumptech.glide.Glide;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -94,8 +90,6 @@ public class VideoAd extends AppCompatActivity {
     int color;
     private static boolean infoShow = true;
 
-    //progress bar
-    int duration = 0;
     ProgressBar progressBar;
     TextView remainingTime;
     SliderImageAdapter adapter;
@@ -108,18 +102,17 @@ public class VideoAd extends AppCompatActivity {
     private long mLastClickTime = 0;
     private long clickedTime = 0;
     private long impressionTime = 0;
-    private int stopPosition;
     private boolean isVideoFinished = false;
-    MediaController mediaController;
-    private int mCurrentPosition = 0;
-    private static final String PLAYBACK_TIME = "play_time";
+    private static final String CURRENT_POSITION = "play_time";
     private static final String REM_TIME = "rem_time";
     private CountDownTimer countDownTimer;
     private long remainingTimeCount = 0;
+    private long videoDuration = 0;
+    private int mCurrentPosition = 0;
 
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_ads);
         if (getSupportActionBar() != null) {
@@ -180,20 +173,19 @@ public class VideoAd extends AppCompatActivity {
         });
         if (savedInstanceState != null) {
             background.setBackgroundColor(randomAndroidColor);
-            mCurrentPosition = savedInstanceState.getInt(PLAYBACK_TIME);
+            mCurrentPosition = savedInstanceState.getInt(CURRENT_POSITION);
             remainingTimeCount = savedInstanceState.getLong(REM_TIME);
-            Log.e(TAG, "remTime: " + mCurrentPosition );
         } else {
             randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
+            Log.e(TAG, "currentTimeOnCreate: " + mCurrentPosition);
         }
 
         MediaController controller = new MediaController(this);
         controller.setMediaPlayer(videoView);
+        //controller.setVisibility(View.GONE);
         videoView.setMediaController(controller);
 
         display();
-
-
     }
 
     private void setUpUI() {
@@ -244,30 +236,10 @@ public class VideoAd extends AppCompatActivity {
             actionButton.setTextColor(color);
             adapter = new SliderImageAdapter(this, listOfImages);
             viewPager.setAdapter(adapter);
-            try {
-                String link = video.getVideoLink();
-                initializePlayer();
-                /*mediaController = new MediaController(this);
-                mediaController.setVisibility(View.GONE);
-                mediaController.setAnchorView(videoView);
-                final Uri video = Uri.parse(link);
-                videoView.setMediaController(mediaController);
-                videoView.setVideoURI(video);
-                videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    public void onPrepared(MediaPlayer mp) {
-                        videoView.start();
-                    }
-                });*/
-                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                retriever.setDataSource(link, new HashMap<String, String>());
-                String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                long timeInMillisec = Long.parseLong(time);
+            initializePlayer();
+            //new PlayVideo().execute();
 
-                //startTimer(timeInMillisec);
-            } catch (Exception e) {
-                // TODO: handle exception
-                Log.d(TAG, e.getMessage());
-            }
+
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -284,6 +256,7 @@ public class VideoAd extends AppCompatActivity {
                 }
             }
             textViewAppName.setText(video.getAppName());
+            textViewAppName.setSelected(true);
             textViewRating.setText(String.valueOf(df.format(Double.valueOf(video.getAppRating()))));
             textViewOfferedBy.setText(String.valueOf(video.getIntAdDescription1()));
             textViewStatusOfApp.setText(String.valueOf(video.getAppStatus()));
@@ -301,34 +274,36 @@ public class VideoAd extends AppCompatActivity {
 
     private void initializePlayer() {
         try {
-            String link = video.getVideoLink();
+            //String link = video.getVideoLink();
+            String link = "https://www.demonuts.com/Demonuts/smallvideo.mp4";
             Uri videoUri = getMedia(link);
             videoView.setVideoURI(videoUri);
-
             videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
-
                     if (mCurrentPosition > 0) {
                         videoView.seekTo(mCurrentPosition);
                         Log.e(TAG, "current: " + mCurrentPosition);
                     } else {
-                        // Skipping to 1 shows the first frame of the video.
-                        videoView.seekTo(1);
+                        Log.e(TAG, "currentSeekTo: " + mCurrentPosition);
+                        videoView.seekTo(0);
                     }
-                    startTimer(videoView.getDuration());
                     videoView.start();
+                     
+                    if (remainingTimeCount > 0) {
+                        startTimer(remainingTimeCount);
+                    } else {
+                        startTimer(videoView.getDuration());
+                    }
 
                 }
             });
-
             videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
-                    //videoView.seekTo(mCurrentPosition);
                     videoView.stopPlayback();
                     isShown = true;
-                     
+
                 }
             });
 
@@ -535,12 +510,7 @@ public class VideoAd extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        outState.putInt("color", randomAndroidColor);
-        onSaveInstanceState(outState);
-    }
+
 
     public boolean isClicked() {
         return isClicked;
@@ -613,16 +583,9 @@ public class VideoAd extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        /*if (videoView.isPlaying()) {
-            stopPosition = videoView.getCurrentPosition(); //stopPosition is an int
-            videoView.pause();
-            videoView.stopPlayback();
-        }*/
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             mCurrentPosition = videoView.getCurrentPosition();
             videoView.pause();
-           // countDownTimer.cancel();
         }
     }
 
@@ -635,31 +598,101 @@ public class VideoAd extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         initializePlayer();
+        //new PlayVideo().execute();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        /*if (isVideoFinished) {
-            videoView.seekTo(stopPosition);
-            videoView.start();
-        }*/
         initializePlayer();
-        //startTimer(remainingTimeCount);
-        Log.e(TAG, "onResume: " + remainingTimeCount);
+
+        //new PlayVideo().execute();
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
+
+    /*@Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putInt("color", randomAndroidColor);
+        onSaveInstanceState(outState);
+    }*/
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(PLAYBACK_TIME, videoView.getCurrentPosition());
-        Log.e(TAG, "rem: " + remainingTimeCount);
+        outState.putInt("color", randomAndroidColor);
+        outState.putInt(CURRENT_POSITION, videoView.getCurrentPosition());
+        Log.e(TAG, "onSavedCurrentTime: " + videoView.getCurrentPosition());
         outState.putLong(REM_TIME, remainingTimeCount);
+        countDownTimer.cancel();
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState == null) {
+            return;
+        } else {
+            background.setBackgroundColor(randomAndroidColor);
+            this.mCurrentPosition = savedInstanceState.getInt(CURRENT_POSITION);
+
+            remainingTimeCount = savedInstanceState.getLong(REM_TIME);
+            Log.e(TAG, "restoredCurrentTime: " + (remainingTimeCount / 100));
+
+        }
+
+
+    }
+
+    private class PlayVideo extends AsyncTask<Void, Integer, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            //String link = video.getVideoLink();
+            String link = "https://www.demonuts.com/Demonuts/smallvideo.mp4";
+            Uri videoUri = getMedia(link);
+            videoView.setVideoURI(videoUri);
+            //videoView.start();
+            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    /*if (mCurrentPosition > 0) {
+                        videoView.seekTo(mCurrentPosition);
+                        Log.e(TAG, "current: " + mCurrentPosition);
+                    } else {
+                        Log.e(TAG, "currentSeekTo: " + mCurrentPosition);
+                        videoView.seekTo(0);
+                    }*/
+                    //  videoView.start();
+                    videoView.seekTo(mCurrentPosition);
+                    videoView.start();
+                    if (remainingTimeCount > 0) {
+                        startTimer(remainingTimeCount);
+                    } else {
+                        startTimer(videoView.getDuration());
+                    }
+                }
+            });
+            do {
+                mCurrentPosition = videoView.getCurrentPosition();
+            } while (videoView.getCurrentPosition() <= videoView.getDuration());
+
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            videoView.stopPlayback();
+            isShown = true;
+        }
     }
 
 }

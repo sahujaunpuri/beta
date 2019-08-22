@@ -3,6 +3,7 @@ package com.adfendo.beta.ads;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -38,12 +39,27 @@ import com.adfendo.beta.utilities.ResponseCode;
 import com.adfendo.beta.utilities.Key;
 import com.adfendo.beta.utilities.Utils;
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -94,7 +110,8 @@ public class VideoAd extends AppCompatActivity {
     TextView remainingTime;
     SliderImageAdapter adapter;
     DecimalFormat df;
-    VideoView videoView;
+    private PlayerView playerView;
+    private SimpleExoPlayer player;
     static boolean isShown = false;
     AdResponse adResponse;
 
@@ -108,8 +125,9 @@ public class VideoAd extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private long remainingTimeCount = 0;
     private long videoDuration = 0;
-    private int mCurrentPosition = 0;
-
+    private long mCurrentPosition = 0;
+    private long playBackPosition = 0;
+    private boolean durationSet = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,17 +191,11 @@ public class VideoAd extends AppCompatActivity {
         });
         if (savedInstanceState != null) {
             background.setBackgroundColor(randomAndroidColor);
-            mCurrentPosition = savedInstanceState.getInt(CURRENT_POSITION);
             remainingTimeCount = savedInstanceState.getLong(REM_TIME);
         } else {
             randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
             Log.e(TAG, "currentTimeOnCreate: " + mCurrentPosition);
         }
-
-        MediaController controller = new MediaController(this);
-        controller.setMediaPlayer(videoView);
-        //controller.setVisibility(View.GONE);
-        videoView.setMediaController(controller);
 
         display();
     }
@@ -206,24 +218,26 @@ public class VideoAd extends AppCompatActivity {
         infoTextView = findViewById(R.id.info_text);
         progressBar = findViewById(R.id.progress_circular);
         remainingTime = findViewById(R.id.remaining_time_text_view);
-        videoView = (VideoView) findViewById(R.id.video);
+        playerView = findViewById(R.id.playerView);
     }
 
-    private void startTimer(final long miliseconds) {
+    private void startTimer(long miliseconds) {
         remainingTime.setVisibility(View.VISIBLE);
         countDownTimer = new CountDownTimer(miliseconds, 1000) {
             public void onTick(long millisUntilFinished) {
                 remainingTime.setText(String.valueOf(millisUntilFinished / 1000));
                 remainingTimeCount = millisUntilFinished;
+                //mCurrentPosition = player.getCurrentPosition();
             }
 
             public void onFinish() {
                 isShown = true;
                 remainingTime.setVisibility(View.GONE);
                 cancelButton.setVisibility(View.VISIBLE);
-                videoView.setVisibility(View.GONE);
+                playerView.setVisibility(View.GONE);
                 viewPager.setVisibility(View.VISIBLE);
                 isVideoFinished = true;
+                releasePlayer();
             }
 
         }.start();
@@ -237,8 +251,6 @@ public class VideoAd extends AppCompatActivity {
             adapter = new SliderImageAdapter(this, listOfImages);
             viewPager.setAdapter(adapter);
             initializePlayer();
-            //new PlayVideo().execute();
-
 
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -274,56 +286,81 @@ public class VideoAd extends AppCompatActivity {
 
     private void initializePlayer() {
         try {
-            //String link = video.getVideoLink();
-            String link = "https://www.demonuts.com/Demonuts/smallvideo.mp4";
-            Uri videoUri = getMedia(link);
-            videoView.setVideoURI(videoUri);
-            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    if (mCurrentPosition > 0) {
-                        videoView.seekTo(mCurrentPosition);
-                        Log.e(TAG, "current: " + mCurrentPosition);
-                    } else {
-                        Log.e(TAG, "currentSeekTo: " + mCurrentPosition);
-                        videoView.seekTo(0);
-                    }
-                    videoView.start();
-                     
-                    if (remainingTimeCount > 0) {
-                        startTimer(remainingTimeCount);
-                    } else {
-                        startTimer(videoView.getDuration());
-                    }
+            String link = video.getVideoLink();
+            //String link = "https://edge4.bioscopelive.com/hls/1C1qzGAOhOszX4I5CcdbIQ/1566473843/ekattur_tv_hi/index.m3u8";
+            //String link = "https://developers.google.com/training/images/tacoma_narrows.mp4";
+            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
+            TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+            player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
 
-                }
-            });
-            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    videoView.stopPlayback();
-                    isShown = true;
+            playerView.setUseController(false);
+            playerView.requestFocus();
+            playerView.setPlayer(player);
+            playerView.setShutterBackgroundColor(Color.TRANSPARENT);
 
+            Uri mp4Uri = Uri.parse(link);
+            DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
+            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "androidwave"), BANDWIDTH_METER);
+            final MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(mp4Uri);
+            player.prepare(videoSource);
+
+            player.setPlayWhenReady(true);
+
+
+            player.addListener(new ExoPlayer.EventListener() {
+                @Override
+                public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                    if (playWhenReady && playbackState == ExoPlayer.STATE_READY && !durationSet) {
+                        videoDuration = player.getDuration();
+                        durationSet = true;
+                        startTimer(videoDuration);
+                    }
                 }
+
+
             });
+ 
 
         } catch (Exception e) {
 
         }
-
     }
 
-    private Uri getMedia(String link) {
-        if (URLUtil.isValidUrl(link)) {
-            // Media name is an external URL.
-            return Uri.parse(link);
-        } else {
-            // Media name is a raw resource embedded in the app.
-            return Uri.parse("android.resource://" + getPackageName() +
-                    "/raw/" + link);
+    private long getRemainingTime(long duration, long currentPosition) {
+        return (duration - currentPosition);
+    }
+
+    private void releasePlayer() {
+        if (player != null) {
+            player.release();
         }
     }
 
+    public void pausePlayer() {
+        if (player != null) {
+            player.setPlayWhenReady(false);
+            player.getPlaybackState();
+            if (countDownTimer != null) {
+                countDownTimer.cancel();
+
+            }
+        }
+    }
+
+    public void resumePlayer() {
+        if (player != null) {
+            player.setPlayWhenReady(true);
+            player.getPlaybackState();
+
+            if (countDownTimer != null) {
+                countDownTimer.cancel();
+                startTimer(getRemainingTime(videoDuration, player.getCurrentPosition()));
+            }
+        } else {
+            initializePlayer();
+        }
+    }
     public void showVideoAd() {
         if (checkConnection()) {
             Intent intent = new Intent(this.context, VideoAd.class);
@@ -583,10 +620,9 @@ public class VideoAd extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            mCurrentPosition = videoView.getCurrentPosition();
-            videoView.pause();
-        }
+        pausePlayer();
+        Log.e("Play", "PlaybackPause " + player.getPlaybackState());
+        //countDownTimer.cancel();
     }
 
     @Override
@@ -597,34 +633,23 @@ public class VideoAd extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        initializePlayer();
-        //new PlayVideo().execute();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        initializePlayer();
-
-        //new PlayVideo().execute();
+        resumePlayer();
+        Log.e("Play", "PlaybackResume " + player.getPlayWhenReady());
+        //startTimer(remainingTimeCount);
     }
-
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        outState.putInt("color", randomAndroidColor);
-        onSaveInstanceState(outState);
-    }*/
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("color", randomAndroidColor);
-        outState.putInt(CURRENT_POSITION, videoView.getCurrentPosition());
-        Log.e(TAG, "onSavedCurrentTime: " + videoView.getCurrentPosition());
-        outState.putLong(REM_TIME, remainingTimeCount);
-        countDownTimer.cancel();
         super.onSaveInstanceState(outState);
+        outState.putInt("color", randomAndroidColor);
+        Log.e(TAG, "onSavedCurrentTime: " + mCurrentPosition);
+        outState.putLong(REM_TIME, remainingTimeCount);
+        //countDownTimer.cancel();
     }
 
     @Override
@@ -634,65 +659,7 @@ public class VideoAd extends AppCompatActivity {
             return;
         } else {
             background.setBackgroundColor(randomAndroidColor);
-            this.mCurrentPosition = savedInstanceState.getInt(CURRENT_POSITION);
-
             remainingTimeCount = savedInstanceState.getLong(REM_TIME);
-            Log.e(TAG, "restoredCurrentTime: " + (remainingTimeCount / 100));
-
-        }
-
-
-    }
-
-    private class PlayVideo extends AsyncTask<Void, Integer, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            //String link = video.getVideoLink();
-            String link = "https://www.demonuts.com/Demonuts/smallvideo.mp4";
-            Uri videoUri = getMedia(link);
-            videoView.setVideoURI(videoUri);
-            //videoView.start();
-            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    /*if (mCurrentPosition > 0) {
-                        videoView.seekTo(mCurrentPosition);
-                        Log.e(TAG, "current: " + mCurrentPosition);
-                    } else {
-                        Log.e(TAG, "currentSeekTo: " + mCurrentPosition);
-                        videoView.seekTo(0);
-                    }*/
-                    //  videoView.start();
-                    videoView.seekTo(mCurrentPosition);
-                    videoView.start();
-                    if (remainingTimeCount > 0) {
-                        startTimer(remainingTimeCount);
-                    } else {
-                        startTimer(videoView.getDuration());
-                    }
-                }
-            });
-            do {
-                mCurrentPosition = videoView.getCurrentPosition();
-            } while (videoView.getCurrentPosition() <= videoView.getDuration());
-
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            videoView.stopPlayback();
-            isShown = true;
         }
     }
-
 }

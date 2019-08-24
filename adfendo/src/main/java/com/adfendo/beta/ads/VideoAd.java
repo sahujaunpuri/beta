@@ -120,13 +120,11 @@ public class VideoAd extends AppCompatActivity {
     private long clickedTime = 0;
     private long impressionTime = 0;
     private boolean isVideoFinished = false;
-    private static final String CURRENT_POSITION = "play_time";
     private static final String REM_TIME = "rem_time";
     private CountDownTimer countDownTimer;
     private long remainingTimeCount = 0;
     private long videoDuration = 0;
     private long mCurrentPosition = 0;
-    private long playBackPosition = 0;
     private boolean durationSet = false;
 
     @Override
@@ -227,7 +225,6 @@ public class VideoAd extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
                 remainingTime.setText(String.valueOf(millisUntilFinished / 1000));
                 remainingTimeCount = millisUntilFinished;
-                //mCurrentPosition = player.getCurrentPosition();
             }
 
             public void onFinish() {
@@ -292,22 +289,17 @@ public class VideoAd extends AppCompatActivity {
             TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
             TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
             player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
-
             playerView.setUseController(false);
             playerView.requestFocus();
             playerView.setPlayer(player);
             playerView.setShutterBackgroundColor(Color.TRANSPARENT);
-
             Uri mp4Uri = Uri.parse(link);
             DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
             DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "androidwave"), BANDWIDTH_METER);
             final MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(mp4Uri);
             player.prepare(videoSource);
-
             player.setPlayWhenReady(true);
-
-
             player.addListener(new ExoPlayer.EventListener() {
                 @Override
                 public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
@@ -317,13 +309,8 @@ public class VideoAd extends AppCompatActivity {
                         startTimer(videoDuration);
                     }
                 }
-
-
             });
- 
-
         } catch (Exception e) {
-
         }
     }
 
@@ -343,7 +330,6 @@ public class VideoAd extends AppCompatActivity {
             player.getPlaybackState();
             if (countDownTimer != null) {
                 countDownTimer.cancel();
-
             }
         }
     }
@@ -352,11 +338,11 @@ public class VideoAd extends AppCompatActivity {
         if (player != null) {
             player.setPlayWhenReady(true);
             player.getPlaybackState();
-
             if (countDownTimer != null) {
                 countDownTimer.cancel();
                 startTimer(getRemainingTime(videoDuration, player.getCurrentPosition()));
             }
+
         } else {
             initializePlayer();
         }
@@ -384,7 +370,6 @@ public class VideoAd extends AppCompatActivity {
             }
         }
     }
-
 
     @SuppressLint("StaticFieldLeak")
     public class LoadAdInBackGround extends AsyncTask<Void, Void, Void> {
@@ -621,7 +606,6 @@ public class VideoAd extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         pausePlayer();
-        Log.e("Play", "PlaybackPause " + player.getPlaybackState());
         //countDownTimer.cancel();
     }
 
@@ -639,8 +623,6 @@ public class VideoAd extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         resumePlayer();
-        Log.e("Play", "PlaybackResume " + player.getPlayWhenReady());
-        //startTimer(remainingTimeCount);
     }
 
     @Override
@@ -649,7 +631,6 @@ public class VideoAd extends AppCompatActivity {
         outState.putInt("color", randomAndroidColor);
         Log.e(TAG, "onSavedCurrentTime: " + mCurrentPosition);
         outState.putLong(REM_TIME, remainingTimeCount);
-        //countDownTimer.cancel();
     }
 
     @Override

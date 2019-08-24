@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="20dp"
+    android:background="@drawable/curve_shape">
+
+    <Button
+        android:id="@+id/privacy_button"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:background="@color/amber"
+        android:padding="10dp"
+        android:text="Privacy Policy"
+        android:textAllCaps="false"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/visit_button_dialog"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/amber"
+        android:padding="10dp"
+        android:text="Visit AdFendo"
+        android:textAllCaps="false"
+        android:textColor="@color/white" />
+</LinearLayout>

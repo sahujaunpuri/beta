@@ -128,8 +128,7 @@ public class CustomInterstitialActivity extends AppCompatActivity {
         info_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.adfendo_url)));
-                startActivity(browserIntent);
+                new Utils().ShowInfoDialog(CustomInterstitialActivity.this);
             }
         });
         if (checkConnection()) {

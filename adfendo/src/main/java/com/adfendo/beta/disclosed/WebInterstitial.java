@@ -126,8 +126,7 @@ public class WebInterstitial extends AppCompatActivity {
         infoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.adfendo_url)));
-                startActivity(browserIntent);
+                new Utils().ShowInfoDialog(WebInterstitial.this);
             }
         });
     }

@@ -183,8 +183,7 @@ public class VideoAd extends AppCompatActivity {
         infoTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.adfendo_url)));
-                startActivity(browserIntent);
+                new Utils().ShowInfoDialog(VideoAd.this);
             }
         });
         if (savedInstanceState != null) {

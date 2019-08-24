@@ -1,9 +1,25 @@
 package com.adfendo.beta.utilities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.text.Layout;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.adfendo.beta.R;
 import com.adfendo.beta.callback.ApiClient;
 import com.adfendo.beta.callback.ApiInterface;
 import com.adfendo.beta.model.IpLocation;
@@ -51,6 +67,7 @@ public class Utils {
             return null;
         }
     }
+
     public static String getRoughNumber(long value) {
         if (value <= 999) {
             return String.valueOf(value);
@@ -59,7 +76,58 @@ public class Utils {
         int digitGroups = (int) (Math.log10(value) / Math.log10(1000));
         return new DecimalFormat("#,##0.#").format(value / Math.pow(1000, digitGroups)) + "" + units[digitGroups];
     }
+
     public static String getAgentInfo(){
        return System.getProperty("http.agent");
+    }
+
+    public void ShowInfoDialog(final Context context) {
+        final Dialog dialog = new Dialog(context); // Context, this, etc.
+        dialog.setContentView(R.layout.info_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        Button privacy_button = dialog.findViewById(R.id.privacy_button);
+        Button visit_button = dialog.findViewById(R.id.visit_button_dialog);
+
+        privacy_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPrivacyPolicyPopup(context);
+                dialog.dismiss();
+            }
+        });
+
+        visit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.adfendo_url)));
+                context.startActivity(browserIntent);
+            }
+        });
+
+        dialog.show();
+
+
+    }
+
+    private void showPrivacyPolicyPopup(Context context) {
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.privacy_policy_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(false);
+        TextView privacy_text = dialog.findViewById(R.id.privacy_text);
+        privacy_text.setMovementMethod(new ScrollingMovementMethod());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            privacy_text.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
+        }
+        ImageView closeDialogButton = dialog.findViewById(R.id.close_dialog_button);
+        closeDialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
     }
 }
